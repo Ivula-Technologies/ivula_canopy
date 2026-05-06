@@ -13,7 +13,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { cn } from "@/lib/utils";
+import { useAuth } from "@/auth/AuthContext";
 
 interface AppLayoutProps {
   children: ReactNode;
@@ -21,6 +21,9 @@ interface AppLayoutProps {
 
 export function AppLayout({ children }: AppLayoutProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const { session, signOut } = useAuth();
+  const userEmail = session?.user?.email ?? "Dashboard user";
+  const userInitials = userEmail.slice(0, 2).toUpperCase();
 
   return (
     <div className="flex min-h-screen w-full bg-background">
@@ -95,7 +98,7 @@ export function AppLayout({ children }: AppLayoutProps) {
                 <Button variant="ghost" size="icon" className="rounded-full">
                   <Avatar className="h-8 w-8">
                     <AvatarFallback className="bg-primary text-primary-foreground text-sm">
-                      PM
+                      {userInitials}
                     </AvatarFallback>
                   </Avatar>
                 </Button>
@@ -103,9 +106,9 @@ export function AppLayout({ children }: AppLayoutProps) {
               <DropdownMenuContent align="end" className="w-56">
                 <DropdownMenuLabel>
                   <div className="flex flex-col">
-                    <span>Pastor Michael</span>
-                    <span className="text-xs font-normal text-muted-foreground">
-                      Youth Pastor
+                    <span>Youth Blossom</span>
+                    <span className="text-xs font-normal text-muted-foreground truncate">
+                      {userEmail}
                     </span>
                   </div>
                 </DropdownMenuLabel>
@@ -113,7 +116,7 @@ export function AppLayout({ children }: AppLayoutProps) {
                 <DropdownMenuItem>Profile</DropdownMenuItem>
                 <DropdownMenuItem>Settings</DropdownMenuItem>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem className="text-destructive">
+                <DropdownMenuItem className="text-destructive" onClick={signOut}>
                   Log out
                 </DropdownMenuItem>
               </DropdownMenuContent>

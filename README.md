@@ -1,105 +1,60 @@
-# Welcome to your Lovable project
+# Youth Blossom Dashboard
 
-## Project info
+Youth Blossom is a Vite, React, TypeScript, shadcn-ui, and Tailwind CSS dashboard for youth ministry records, attendance, programs, and reporting.
 
-**URL**: https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID
-
-## How can I edit this code?
-
-There are several ways of editing your application.
-
-**Use Lovable**
-
-Simply visit the [Lovable Project](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and start prompting.
-
-Changes made via Lovable will be committed automatically to this repo.
-
-**Use your preferred IDE**
-
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
-
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
+## Local Development
 
 ```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
+git clone https://github.com/BiusMichaelJoseph/youth-blossom-dashboard.git
+cd youth-blossom-dashboard
 npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+## Production Backend
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+The production backend is Supabase:
 
-**Use GitHub Codespaces**
+- Supabase Auth protects the dashboard when Supabase env vars are configured.
+- Supabase Postgres stores youth records, programs, attendance records, and profiles.
+- Row Level Security is enabled so only authenticated users can access the data.
+- The frontend talks to Supabase through the public REST API using the publishable/anon key.
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+The schema is tracked in `supabase/migrations/202605050001_create_youth_blossom_core_tables.sql` and has already been applied to the Supabase project `gqbexgzripypojpvgsbu`.
 
-## What technologies are used for this project?
+## Vercel Environment Variables
 
-This project is built with:
+Add these to the Vercel project for Production, Preview, and Development as needed:
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+```env
+VITE_SUPABASE_URL=https://gqbexgzripypojpvgsbu.supabase.co
+VITE_SUPABASE_ANON_KEY=your_supabase_publishable_or_anon_key
+```
 
-## How can I deploy this project?
+Use a Supabase publishable key or legacy anon key. Do not put the Supabase `service_role` key in Vercel frontend environment variables.
 
-Simply open [Lovable](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and click on Share -> Publish.
+## First Admin/User Login
 
-## Can I connect a custom domain to my Lovable project?
+Create the first dashboard user in Supabase:
 
-Yes, you can!
+1. Open Supabase Dashboard.
+2. Go to Authentication > Users.
+3. Add a user with email and password.
+4. Use that email/password on the Youth Blossom sign-in screen.
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+The current MVP policies allow any authenticated dashboard user to read and maintain core records. Tighten role-specific policies before adding a larger team.
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+## Current Data Sync
 
-## Backend API (Express + TypeScript)
+The directory and attendance persistence layer still supports local fallback for development. When Supabase is configured and a user is signed in, it hydrates from Supabase and syncs changes back to Postgres.
 
-A backend scaffold is available under `backend/` and mirrors the frontend's youth/program/attendance models.
+## Legacy Express API
 
-### Run backend locally
+A scaffolded Express API remains under `backend/` for future custom server work. It uses in-memory demo data and hardcoded demo credentials, so it should not be deployed as the production backend without replacing that storage/auth layer.
+
+Useful scripts:
 
 ```bash
 npm run api:dev
+npm run api:test
 ```
-
-Server starts at `http://localhost:4000`.
-
-### Auth
-
-`POST /api/auth/login`
-
-Demo credentials:
-- `admin@youthblossom.org` / `admin123`
-- `leader@youthblossom.org` / `leader123`
-- `volunteer@youthblossom.org` / `vol123`
-
-Use `Authorization: Bearer <token>` for protected routes.
-
-### Main endpoints
-
-- `GET/POST/PUT/DELETE /api/youths`
-- `GET /api/programs`
-- `GET/POST /api/attendance`
-- `GET /api/dashboard/metrics`
-
-Attendance writes automatically recalculate youth attendance rate + engagement score/status.
