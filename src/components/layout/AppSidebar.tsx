@@ -6,7 +6,6 @@ import {
   Calendar,
   BarChart3,
   Settings,
-  LogOut,
   ChevronLeft,
   ChevronRight,
   FileText,
