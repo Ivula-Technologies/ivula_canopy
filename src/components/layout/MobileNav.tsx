@@ -48,8 +48,8 @@ export function MobileNav({ open, onOpenChange }: MobileNavProps) {
       <SheetContent side="left" className="w-72 p-0">
         <SheetHeader className="flex flex-row items-center h-16 px-4 border-b border-border">
           <div className="flex items-center gap-3 flex-1">
-            <img src="/canopy-logo.svg" alt="Canopy logo" className="w-9 h-9 rounded-lg object-cover" />
-            <SheetTitle className="font-display font-semibold">Canopy</SheetTitle>
+            <img src="/ivula-mark.svg" alt="Ivula Canopy logo" className="w-9 h-9 rounded-lg object-contain bg-white p-1" />
+            <SheetTitle className="font-display font-semibold">Ivula Canopy</SheetTitle>
           </div>
         </SheetHeader>
 
