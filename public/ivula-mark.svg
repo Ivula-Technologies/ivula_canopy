@@ -1,0 +1,18 @@
+<svg width="120" height="120" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
+  <title id="title">Ivula Canopy mark</title>
+  <desc id="desc">A cyan geometric Ivula mark inspired by a lightning bolt.</desc>
+  <defs>
+    <linearGradient id="ivulaGradient" x1="16" y1="14" x2="107" y2="104" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#17D7DE"/>
+      <stop offset="1" stop-color="#1295F5"/>
+    </linearGradient>
+    <filter id="softShadow" x="0" y="0" width="120" height="120" color-interpolation-filters="sRGB">
+      <feDropShadow dx="0" dy="2" stdDeviation="2" flood-color="#0A2342" flood-opacity="0.12"/>
+    </filter>
+  </defs>
+  <g filter="url(#softShadow)">
+    <circle cx="55" cy="18" r="14" fill="url(#ivulaGradient)"/>
+    <path d="M56 38H72V67L55 84V106L38 88V70L22 75L56 38Z" fill="url(#ivulaGradient)"/>
+    <path d="M98 36V54L67 84H92L55 114V90L98 36Z" fill="url(#ivulaGradient)"/>
+  </g>
+</svg>
