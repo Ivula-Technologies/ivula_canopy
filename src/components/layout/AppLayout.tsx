@@ -25,7 +25,7 @@ function formatRole(role: string) {
 
 export function AppLayout({ children }: AppLayoutProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const { session, signOut, memberships, activeMembership, switchChurch } = useAuth();
+  const { session, signOut, memberships, activeMembership, canManageChurch, switchChurch } = useAuth();
   const userEmail = session?.user?.email ?? "Dashboard user";
   const userInitials = userEmail.slice(0, 2).toUpperCase();
 
@@ -88,6 +88,17 @@ export function AppLayout({ children }: AppLayoutProps) {
                       {membership.churchId === activeMembership.churchId && <Check className="h-4 w-4 text-primary" />}
                     </DropdownMenuItem>
                   ))}
+                  {canManageChurch && activeMembership.churchJoinCode && (
+                    <>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuLabel>
+                        <div className="space-y-1">
+                          <span className="text-xs uppercase tracking-wide text-muted-foreground">Join code</span>
+                          <span className="block font-mono text-sm text-foreground">{activeMembership.churchJoinCode}</span>
+                        </div>
+                      </DropdownMenuLabel>
+                    </>
+                  )}
                 </DropdownMenuContent>
               </DropdownMenu>
             )}
