@@ -1,5 +1,5 @@
 import { FormEvent, useState, type ReactNode } from "react";
-import { Building2, LogIn, UserPlus, Users } from "lucide-react";
+import { Building2, Clock, LogIn, UserPlus, Users } from "lucide-react";
 import { useAuth, type JoinableChurchRole, type SignupIntent } from "@/auth/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -15,7 +15,7 @@ import {
 } from "@/components/ui/select";
 
 export function AuthGate({ children }: { children: ReactNode }) {
-  const { isConfigured, isAuthenticated, activeMembership, isLoadingAccess, accessError, signIn, signUp } = useAuth();
+  const { isConfigured, isAuthenticated, activeMembership, pendingMembership, isLoadingAccess, accessError, signIn, signUp, signOut } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [signupMode, setSignupMode] = useState<"register_church" | "join_church">("register_church");
@@ -48,6 +48,33 @@ export function AuthGate({ children }: { children: ReactNode }) {
 
   if (isAuthenticated && activeMembership) {
     return <>{children}</>;
+  }
+
+  if (isAuthenticated && pendingMembership) {
+    return (
+      <main className="min-h-screen bg-background flex items-center justify-center p-4">
+        <Card className="w-full max-w-md">
+          <CardHeader className="space-y-3">
+            <img src="/ivula-mark.svg" alt="Ivula Canopy logo" className="h-12 w-12 rounded-lg object-contain bg-white p-1" />
+            <div>
+              <CardTitle>Access request pending</CardTitle>
+              <CardDescription>{pendingMembership.churchName}</CardDescription>
+            </div>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="rounded-lg border bg-muted/40 p-4 text-sm text-muted-foreground">
+              <div className="mb-2 flex items-center gap-2 font-medium text-foreground">
+                <Clock className="h-4 w-4" />
+                Waiting for a church admin
+              </div>
+              Your request for {pendingMembership.role} access has been sent. An owner or admin from this church needs to approve it before you can use the dashboard.
+            </div>
+            {accessError && <p className="text-sm text-destructive">{accessError}</p>}
+            <Button variant="outline" className="w-full" onClick={signOut}>Use another account</Button>
+          </CardContent>
+        </Card>
+      </main>
+    );
   }
 
   async function handleSignIn(event: FormEvent<HTMLFormElement>) {
