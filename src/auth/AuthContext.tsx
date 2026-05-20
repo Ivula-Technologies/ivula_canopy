@@ -14,6 +14,7 @@ import {
 const PENDING_SIGNUP_INTENT_KEY = "ivula_canopy_pending_signup_intent";
 
 export type ChurchRole = "owner" | "admin" | "leader" | "volunteer" | "viewer";
+export type ChurchMembershipStatus = "active" | "invited" | "disabled";
 export type JoinableChurchRole = "leader" | "volunteer" | "viewer";
 
 export type SignupIntent =
@@ -27,6 +28,7 @@ export interface ChurchMembership {
   churchSlug?: string | null;
   churchJoinCode?: string | null;
   role: ChurchRole;
+  status: ChurchMembershipStatus;
 }
 
 interface AuthContextValue {
@@ -35,6 +37,7 @@ interface AuthContextValue {
   isAuthenticated: boolean;
   memberships: ChurchMembership[];
   activeMembership: ChurchMembership | null;
+  pendingMembership: ChurchMembership | null;
   isLoadingAccess: boolean;
   accessError: string | null;
   canEditRecords: boolean;
@@ -58,7 +61,7 @@ interface MembershipRow {
   id: string;
   church_id: string;
   role: ChurchRole;
-  status: string;
+  status: ChurchMembershipStatus;
   churches?: ChurchRow | ChurchRow[] | null;
 }
 
@@ -68,6 +71,7 @@ interface CreatedChurchMembershipRow {
   church_name: string;
   church_slug?: string | null;
   role: ChurchRole;
+  status?: ChurchMembershipStatus;
 }
 
 const AuthContext = createContext<AuthContextValue | null>(null);
@@ -86,6 +90,7 @@ function toMembership(row: MembershipRow): ChurchMembership {
     churchSlug: church?.slug,
     churchJoinCode: church?.join_code,
     role: row.role,
+    status: row.status,
   };
 }
 
@@ -96,6 +101,7 @@ function toCreatedMembership(row: CreatedChurchMembershipRow): ChurchMembership 
     churchName: row.church_name,
     churchSlug: row.church_slug,
     role: row.role,
+    status: row.status ?? "active",
   };
 }
 
@@ -120,7 +126,7 @@ function getPendingSignupIntent(): SignupIntent | null {
 
 async function fetchMemberships(): Promise<ChurchMembership[]> {
   const rows = await supabaseRequest<MembershipRow[]>(
-    "church_memberships?select=id,church_id,role,status,churches(id,name,slug,join_code)&status=eq.active&order=created_at.asc"
+    "church_memberships?select=id,church_id,role,status,churches(id,name,slug,join_code)&status=in.(active,invited)&order=created_at.asc"
   );
   return rows.map(toMembership);
 }
@@ -189,7 +195,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       setMemberships(nextMemberships);
       const storedChurchId = getActiveChurchId();
-      const nextActive = nextMemberships.find((membership) => membership.churchId === storedChurchId) ?? nextMemberships[0] ?? null;
+      const activeMemberships = nextMemberships.filter((membership) => membership.status === "active");
+      const nextActive = activeMemberships.find((membership) => membership.churchId === storedChurchId) ?? activeMemberships[0] ?? null;
       storeActiveChurchId(nextActive?.churchId ?? null);
       setActiveChurchId(nextActive?.churchId ?? null);
     } catch (error) {
@@ -206,7 +213,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     loadAccess(session);
   }, [session?.access_token]);
 
-  const activeMembership = memberships.find((membership) => membership.churchId === activeChurchId) ?? memberships[0] ?? null;
+  const activeMembership = memberships.find((membership) => membership.status === "active" && membership.churchId === activeChurchId) ?? memberships.find((membership) => membership.status === "active") ?? null;
+  const pendingMembership = memberships.find((membership) => membership.status === "invited") ?? null;
   const activeRole = activeMembership?.role;
   const canManageChurch = activeRole === "owner" || activeRole === "admin";
   const canEditRecords = canManageChurch || activeRole === "leader";
@@ -220,6 +228,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       isAuthenticated: Boolean(session?.access_token),
       memberships,
       activeMembership,
+      pendingMembership,
       isLoadingAccess,
       accessError,
       canEditRecords,
@@ -251,14 +260,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setActiveChurchId(null);
       },
       switchChurch(churchId) {
-        const membership = memberships.find((item) => item.churchId === churchId);
+        const membership = memberships.find((item) => item.status === "active" && item.churchId === churchId);
         if (!membership) return;
         storeActiveChurchId(churchId);
         setActiveChurchId(churchId);
         window.location.reload();
       },
     }),
-    [session, memberships, activeMembership, isLoadingAccess, accessError, canEditRecords, canManageChurch, canRecordAttendance, canExportRecords]
+    [session, memberships, activeMembership, pendingMembership, isLoadingAccess, accessError, canEditRecords, canManageChurch, canRecordAttendance, canExportRecords]
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
