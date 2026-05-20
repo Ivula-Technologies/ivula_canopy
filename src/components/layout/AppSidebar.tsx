@@ -10,6 +10,7 @@ import {
   ChevronRight,
   FileText,
   Shield,
+  UserCog,
 } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import { cn } from "@/lib/utils";
@@ -29,6 +30,7 @@ const mainNavItems = [
 ];
 
 const bottomNavItems = [
+  { title: "Team", url: "/team", icon: UserCog },
   { title: "Admin", url: "/admin", icon: Shield },
   { title: "Settings", url: "/settings", icon: Settings },
 ];
