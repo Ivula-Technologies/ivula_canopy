@@ -140,7 +140,9 @@ async function createFirstChurchForUser(session: SupabaseSession, churchNameOver
     body: JSON.stringify({ requested_church_name: churchName }),
   });
 
-  return rows.map(toCreatedMembership);
+  const createdMemberships = rows.map(toCreatedMembership);
+  const refreshedMemberships = await fetchMemberships();
+  return refreshedMemberships.length > 0 ? refreshedMemberships : createdMemberships;
 }
 
 async function joinChurchForUser(intent: Extract<SignupIntent, { type: "join_church" }>): Promise<ChurchMembership[]> {
@@ -149,7 +151,9 @@ async function joinChurchForUser(intent: Extract<SignupIntent, { type: "join_chu
     body: JSON.stringify({ requested_join_code: intent.joinCode, requested_role: intent.role }),
   });
 
-  return rows.map(toCreatedMembership);
+  const joinedMemberships = rows.map(toCreatedMembership);
+  const refreshedMemberships = await fetchMemberships();
+  return refreshedMemberships.length > 0 ? refreshedMemberships : joinedMemberships;
 }
 
 async function applySignupIntent(session: SupabaseSession, intent: SignupIntent): Promise<ChurchMembership[]> {
