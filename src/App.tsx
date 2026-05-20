@@ -11,6 +11,7 @@ import YouthDirectory from "./pages/YouthDirectory";
 import Programs from "./pages/Programs";
 import Analytics from "./pages/Analytics";
 import Reports from "./pages/Reports";
+import Team from "./pages/Team";
 import Admin from "./pages/Admin";
 import Settings from "./pages/Settings";
 import NotFound from "./pages/NotFound";
@@ -32,6 +33,7 @@ const App = () => (
                 <Route path="/programs" element={<Programs />} />
                 <Route path="/analytics" element={<Analytics />} />
                 <Route path="/reports" element={<Reports />} />
+                <Route path="/team" element={<Team />} />
                 <Route path="/admin" element={<Admin />} />
                 <Route path="/settings" element={<Settings />} />
                 {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
