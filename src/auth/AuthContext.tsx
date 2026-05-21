@@ -21,7 +21,16 @@ export type SignupIntent =
   | { type: "register_church"; churchName: string }
   | { type: "join_church"; joinCode: string; role: JoinableChurchRole };
 
-export interface ChurchMembership {
+export interface OrganizationLabels {
+  organizationType: string;
+  memberLabel: string;
+  programLabel: string;
+  groupLabel: string;
+  attendanceLabel: string;
+  primaryFocus: string;
+}
+
+export interface ChurchMembership extends OrganizationLabels {
   id: string;
   churchId: string;
   churchName: string;
@@ -55,6 +64,12 @@ interface ChurchRow {
   name: string;
   slug?: string | null;
   join_code?: string | null;
+  organization_type?: string | null;
+  member_label?: string | null;
+  program_label?: string | null;
+  group_label?: string | null;
+  attendance_label?: string | null;
+  primary_focus?: string | null;
 }
 
 interface MembershipRow {
@@ -74,11 +89,31 @@ interface CreatedChurchMembershipRow {
   status?: ChurchMembershipStatus;
 }
 
+const defaultLabels: OrganizationLabels = {
+  organizationType: "youth_program",
+  memberLabel: "People",
+  programLabel: "Programs",
+  groupLabel: "Groups",
+  attendanceLabel: "Attendance",
+  primaryFocus: "Youth Programs",
+};
+
 const AuthContext = createContext<AuthContextValue | null>(null);
 
 function getJoinedChurch(row: MembershipRow): ChurchRow | null {
   if (Array.isArray(row.churches)) return row.churches[0] ?? null;
   return row.churches ?? null;
+}
+
+function toLabels(church?: ChurchRow | null): OrganizationLabels {
+  return {
+    organizationType: church?.organization_type ?? defaultLabels.organizationType,
+    memberLabel: church?.member_label ?? defaultLabels.memberLabel,
+    programLabel: church?.program_label ?? defaultLabels.programLabel,
+    groupLabel: church?.group_label ?? defaultLabels.groupLabel,
+    attendanceLabel: church?.attendance_label ?? defaultLabels.attendanceLabel,
+    primaryFocus: church?.primary_focus ?? defaultLabels.primaryFocus,
+  };
 }
 
 function toMembership(row: MembershipRow): ChurchMembership {
@@ -91,6 +126,7 @@ function toMembership(row: MembershipRow): ChurchMembership {
     churchJoinCode: church?.join_code,
     role: row.role,
     status: row.status,
+    ...toLabels(church),
   };
 }
 
@@ -102,6 +138,7 @@ function toCreatedMembership(row: CreatedChurchMembershipRow): ChurchMembership 
     churchSlug: row.church_slug,
     role: row.role,
     status: row.status ?? "active",
+    ...defaultLabels,
   };
 }
 
@@ -126,7 +163,7 @@ function getPendingSignupIntent(): SignupIntent | null {
 
 async function fetchMemberships(): Promise<ChurchMembership[]> {
   const rows = await supabaseRequest<MembershipRow[]>(
-    "church_memberships?select=id,church_id,role,status,churches(id,name,slug,join_code)&status=in.(active,invited)&order=created_at.asc"
+    "church_memberships?select=id,church_id,role,status,churches(id,name,slug,join_code,organization_type,member_label,program_label,group_label,attendance_label,primary_focus)&status=in.(active,invited)&order=created_at.asc"
   );
   return rows.map(toMembership);
 }
