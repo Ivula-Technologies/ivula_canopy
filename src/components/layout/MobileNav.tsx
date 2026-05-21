@@ -20,7 +20,7 @@ import {
 
 const mainNavItems = [
   { title: "Dashboard", url: "/", icon: LayoutDashboard },
-  { title: "Youth Directory", url: "/directory", icon: Users },
+  { title: "People Directory", url: "/directory", icon: Users },
   { title: "Programs", url: "/programs", icon: Calendar },
   { title: "Analytics", url: "/analytics", icon: BarChart3 },
   { title: "Reports", url: "/reports", icon: FileText },
