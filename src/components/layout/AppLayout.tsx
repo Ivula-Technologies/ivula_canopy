@@ -53,7 +53,7 @@ export function AppLayout({ children }: AppLayoutProps) {
             <div className="relative w-full">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
-                placeholder="Search youth, programs..."
+                placeholder="Search people, programs..."
                 className="pl-9 bg-muted/50 border-0 focus-visible:ring-1"
               />
             </div>
@@ -73,7 +73,7 @@ export function AppLayout({ children }: AppLayoutProps) {
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-72">
-                  <DropdownMenuLabel>Your churches</DropdownMenuLabel>
+                  <DropdownMenuLabel>Your organizations</DropdownMenuLabel>
                   <DropdownMenuSeparator />
                   {memberships.map((membership) => (
                     <DropdownMenuItem
@@ -115,12 +115,12 @@ export function AppLayout({ children }: AppLayoutProps) {
                 <DropdownMenuLabel>Notifications</DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem className="flex flex-col items-start gap-1 py-3">
-                  <span className="font-medium text-sm">New youth registration</span>
-                  <span className="text-xs text-muted-foreground">John Doe just registered for Youth Service</span>
+                  <span className="font-medium text-sm">New registration</span>
+                  <span className="text-xs text-muted-foreground">A new person registered for a program</span>
                 </DropdownMenuItem>
                 <DropdownMenuItem className="flex flex-col items-start gap-1 py-3">
                   <span className="font-medium text-sm">Attendance alert</span>
-                  <span className="text-xs text-muted-foreground">5 youth members marked as at-risk</span>
+                  <span className="text-xs text-muted-foreground">5 people were marked as at-risk</span>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem className="text-center text-primary text-sm">
@@ -145,7 +145,7 @@ export function AppLayout({ children }: AppLayoutProps) {
                     <span>Ivula Canopy</span>
                     {activeMembership && (
                       <span className="text-xs font-normal text-muted-foreground truncate">
-                        {activeMembership.churchName} · {formatRole(activeMembership.role)}
+                        {activeMembership.churchName} &middot; {formatRole(activeMembership.role)}
                       </span>
                     )}
                     <span className="text-xs font-normal text-muted-foreground truncate">
