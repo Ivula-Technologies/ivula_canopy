@@ -153,10 +153,10 @@ export default function Team() {
       <div className="space-y-6 animate-fade-in">
         <div className="page-header">
           <h1 className="page-title">Team Management</h1>
-          <p className="page-description">Choose an active church before managing access.</p>
+          <p className="page-description">Choose an active organization before managing access.</p>
         </div>
         <Card>
-          <CardContent className="py-10 text-center text-muted-foreground">No active church is selected.</CardContent>
+          <CardContent className="py-10 text-center text-muted-foreground">No active organization is selected.</CardContent>
         </Card>
       </div>
     );
@@ -171,7 +171,7 @@ export default function Team() {
         </div>
         <Card>
           <CardContent className="py-10 text-center text-muted-foreground">
-            Ask your church owner or an admin to manage team access.
+            Ask your organization owner or an admin to manage team access.
           </CardContent>
         </Card>
       </div>
@@ -216,7 +216,7 @@ export default function Team() {
           <CardContent className="pt-6">
             <div className="flex items-center justify-between gap-3">
               <div>
-                <p className="text-sm text-muted-foreground">Church join code</p>
+                <p className="text-sm text-muted-foreground">Organization join code</p>
                 <p className="text-2xl font-bold tracking-wide">{activeMembership.churchJoinCode ?? "Unavailable"}</p>
               </div>
               <Button variant="outline" size="icon" onClick={copyJoinCode} disabled={!activeMembership.churchJoinCode}>
@@ -236,7 +236,7 @@ export default function Team() {
       <Card>
         <CardHeader className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <CardTitle>Church Team</CardTitle>
+            <CardTitle>Organization Team</CardTitle>
             <CardDescription>New members who use the join code stay pending until approved.</CardDescription>
           </div>
           <Button variant="outline" onClick={loadTeam} disabled={isLoading}>
