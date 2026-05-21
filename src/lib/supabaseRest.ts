@@ -57,6 +57,15 @@ function requireSupabaseConfig() {
   return { supabaseUrl, supabaseAnonKey };
 }
 
+function getEmailRedirectTo() {
+  return window.location.origin;
+}
+
+function withRedirectTo(url: string) {
+  const redirectTo = encodeURIComponent(getEmailRedirectTo());
+  return `${url}?redirect_to=${redirectTo}`;
+}
+
 function toSession(payload: any): SupabaseSession | null {
   const source = payload.session ?? payload;
   if (!source?.access_token) return null;
@@ -96,7 +105,7 @@ export async function signInWithPassword(email: string, password: string) {
 
 export async function signUpWithPassword(email: string, password: string) {
   const { supabaseUrl, supabaseAnonKey } = requireSupabaseConfig();
-  const response = await fetch(`${supabaseUrl}/auth/v1/signup`, {
+  const response = await fetch(withRedirectTo(`${supabaseUrl}/auth/v1/signup`), {
     method: "POST",
     headers: {
       apikey: supabaseAnonKey,
@@ -116,6 +125,23 @@ export async function signUpWithPassword(email: string, password: string) {
   }
 
   return session;
+}
+
+export async function resendSignupConfirmation(email: string) {
+  const { supabaseUrl, supabaseAnonKey } = requireSupabaseConfig();
+  const response = await fetch(withRedirectTo(`${supabaseUrl}/auth/v1/resend`), {
+    method: "POST",
+    headers: {
+      apikey: supabaseAnonKey,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ type: "signup", email }),
+  });
+
+  const payload = await response.json().catch(() => null);
+  if (!response.ok) {
+    throw new Error(payload?.error_description || payload?.msg || payload?.message || "Unable to resend confirmation email");
+  }
 }
 
 export async function supabaseRequest<T>(path: string, init: RequestInit = {}): Promise<T> {
