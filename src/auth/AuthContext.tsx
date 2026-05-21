@@ -86,7 +86,7 @@ function toMembership(row: MembershipRow): ChurchMembership {
   return {
     id: row.id,
     churchId: row.church_id,
-    churchName: church?.name ?? "Church",
+    churchName: church?.name ?? "Organization",
     churchSlug: church?.slug,
     churchJoinCode: church?.join_code,
     role: row.role,
@@ -134,7 +134,7 @@ async function fetchMemberships(): Promise<ChurchMembership[]> {
 async function createFirstChurchForUser(session: SupabaseSession, churchNameOverride?: string): Promise<ChurchMembership[]> {
   if (!session.user?.id) return [];
 
-  const churchName = churchNameOverride || (session.user.email ? `${session.user.email.split("@")[0]}'s Church` : "My Church");
+  const churchName = churchNameOverride || (session.user.email ? `${session.user.email.split("@")[0]}'s Organization` : "My Organization");
   const rows = await supabaseRequest<CreatedChurchMembershipRow[]>("rpc/create_church_for_current_user", {
     method: "POST",
     body: JSON.stringify({ requested_church_name: churchName }),
@@ -204,7 +204,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       storeActiveChurchId(nextActive?.churchId ?? null);
       setActiveChurchId(nextActive?.churchId ?? null);
     } catch (error) {
-      const message = error instanceof Error ? error.message : "Unable to load church access";
+      const message = error instanceof Error ? error.message : "Unable to load organization access";
       setAccessError(message);
       setMemberships([]);
       setActiveChurchId(null);
