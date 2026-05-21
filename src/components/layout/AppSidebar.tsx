@@ -23,7 +23,7 @@ import {
 
 const mainNavItems = [
   { title: "Dashboard", url: "/", icon: LayoutDashboard },
-  { title: "Youth Directory", url: "/directory", icon: Users },
+  { title: "People Directory", url: "/directory", icon: Users },
   { title: "Programs", url: "/programs", icon: Calendar },
   { title: "Analytics", url: "/analytics", icon: BarChart3 },
   { title: "Reports", url: "/reports", icon: FileText },
@@ -97,7 +97,7 @@ export function AppSidebar() {
         {!collapsed && (
           <div className="flex flex-col">
             <span className="font-display font-semibold text-sidebar-foreground">Ivula Canopy</span>
-            <span className="text-xs text-muted-foreground">Ministry Dashboard</span>
+            <span className="text-xs text-muted-foreground">Organization Dashboard</span>
           </div>
         )}
       </div>
