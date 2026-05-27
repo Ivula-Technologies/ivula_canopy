@@ -6,8 +6,6 @@ import {
   CartesianGrid,
   Tooltip,
   ResponsiveContainer,
-  LineChart,
-  Line,
   PieChart,
   Pie,
   Cell,
@@ -21,21 +19,18 @@ import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import {
   ageDistributionData,
-  attendanceTrendData,
-  programParticipationData,
   mockYouths,
   mockPrograms,
 } from "@/data/mockData";
-import { TrendingUp, TrendingDown, AlertTriangle, Target, Users, CheckCircle } from "lucide-react";
+import { TrendingUp, TrendingDown, AlertTriangle, Target, Users } from "lucide-react";
+import { useAuth } from "@/auth/AuthContext";
 
-// Engagement risk data
 const engagementRiskData = [
   { name: "High Risk", value: 5, color: "hsl(var(--disengaged))" },
   { name: "Medium Risk", value: 8, color: "hsl(var(--at-risk))" },
   { name: "Low Risk", value: 35, color: "hsl(var(--engaged))" },
 ];
 
-// Retention trend
 const retentionTrendData = [
   { month: "Aug", rate: 82 },
   { month: "Sep", rate: 85 },
@@ -45,33 +40,36 @@ const retentionTrendData = [
   { month: "Jan", rate: 88 },
 ];
 
-// Growth metrics
-const growthMetrics = [
-  { label: "New Members (This Quarter)", value: 8, change: 33, trend: "up" },
-  { label: "Retention Rate", value: "87.5%", change: 5, trend: "up" },
-  { label: "Avg. Engagement Score", value: 72, change: 3, trend: "up" },
-  { label: "At-Risk Members", value: 5, change: -2, trend: "down" },
-];
-
 const Analytics = () => {
-  const programComparison = mockPrograms.map((p) => ({
-    name: p.name.split(" ").slice(0, 2).join(" "),
-    engagement: p.engagementScore,
-    attendance: p.averageAttendance,
-    participants: p.participantCount,
+  const { activeMembership } = useAuth();
+  const memberLabel = activeMembership?.memberLabel ?? "People";
+  const programLabel = activeMembership?.programLabel ?? "Programs";
+  const attendanceLabel = activeMembership?.attendanceLabel ?? "Attendance";
+  const primaryFocus = activeMembership?.primaryFocus ?? "Organizational Health";
+
+  const growthMetrics = [
+    { label: `New ${memberLabel} This Quarter`, value: 8, change: 33, trend: "up" },
+    { label: "Retention Rate", value: "87.5%", change: 5, trend: "up" },
+    { label: "Avg. Engagement Score", value: 72, change: 3, trend: "up" },
+    { label: `${memberLabel} Needing Follow-Up`, value: 5, change: -2, trend: "down" },
+  ];
+
+  const programComparison = mockPrograms.map((program) => ({
+    name: program.name.split(" ").slice(0, 2).join(" "),
+    engagement: program.engagementScore,
+    attendance: program.averageAttendance,
+    participants: program.participantCount,
   }));
 
   return (
     <div className="space-y-6 animate-fade-in">
-      {/* Page Header */}
       <div className="page-header">
         <h1 className="page-title">Analytics & Insights</h1>
         <p className="page-description">
-          Deep dive into engagement metrics and program effectiveness
+          Understand {primaryFocus.toLowerCase()}, participation, retention, and {programLabel.toLowerCase()} effectiveness.
         </p>
       </div>
 
-      {/* Key Metrics */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {growthMetrics.map((metric, index) => (
           <Card key={index}>
@@ -105,13 +103,12 @@ const Analytics = () => {
       <Tabs defaultValue="engagement" className="space-y-6">
         <TabsList className="grid w-full max-w-md grid-cols-3">
           <TabsTrigger value="engagement">Engagement</TabsTrigger>
-          <TabsTrigger value="programs">Programs</TabsTrigger>
-          <TabsTrigger value="demographics">Demographics</TabsTrigger>
+          <TabsTrigger value="programs">{programLabel}</TabsTrigger>
+          <TabsTrigger value="demographics">Profile</TabsTrigger>
         </TabsList>
 
         <TabsContent value="engagement" className="space-y-6">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {/* Engagement Risk Distribution */}
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
@@ -119,7 +116,7 @@ const Analytics = () => {
                   Engagement Risk Analysis
                 </CardTitle>
                 <CardDescription>
-                  Distribution of youth by engagement risk level
+                  Distribution of {memberLabel.toLowerCase()} by engagement risk level
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -156,14 +153,13 @@ const Analytics = () => {
                         />
                         <span className="text-sm">{item.name}</span>
                       </div>
-                      <span className="font-medium">{item.value} members</span>
+                      <span className="font-medium">{item.value} {memberLabel.toLowerCase()}</span>
                     </div>
                   ))}
                 </div>
               </CardContent>
             </Card>
 
-            {/* Retention Trend */}
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
@@ -215,57 +211,56 @@ const Analytics = () => {
             </Card>
           </div>
 
-          {/* At-Risk Members List */}
           <Card>
             <CardHeader>
-              <CardTitle>Members Needing Follow-Up</CardTitle>
+              <CardTitle>{memberLabel} Needing Follow-Up</CardTitle>
               <CardDescription>
-                Youth members with declining engagement scores
+                {memberLabel} with declining engagement scores or participation gaps
               </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
                 {mockYouths
-                  .filter((y) => y.engagementStatus !== "engaged")
+                  .filter((person) => person.engagementStatus !== "engaged")
                   .slice(0, 5)
-                  .map((youth) => (
+                  .map((person) => (
                     <div
-                      key={youth.id}
+                      key={person.id}
                       className="flex items-center justify-between p-3 rounded-lg bg-muted/50"
                     >
                       <div className="flex items-center gap-3">
                         <div
                           className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-medium ${
-                            youth.engagementStatus === "at-risk"
+                            person.engagementStatus === "at-risk"
                               ? "bg-warning/20 text-warning"
                               : "bg-destructive/20 text-destructive"
                           }`}
                         >
-                          {youth.firstName[0]}{youth.lastName[0]}
+                          {person.firstName[0]}{person.lastName[0]}
                         </div>
                         <div>
                           <p className="font-medium">
-                            {youth.firstName} {youth.lastName}
+                            {person.firstName} {person.lastName}
                           </p>
                           <p className="text-sm text-muted-foreground">
-                            {youth.notes || `Last attended: ${youth.lastAttendance}`}
+                            {person.notes || `Last recorded ${attendanceLabel.toLowerCase()}: ${person.lastAttendance}`}
                           </p>
                         </div>
                       </div>
                       <div className="flex items-center gap-4">
                         <div className="text-right">
                           <p className="text-sm text-muted-foreground">Engagement</p>
-                          <p className="font-medium">{youth.engagementScore}%</p>
+                          <p className="font-medium">{person.engagementScore}%</p>
                         </div>
                         <Badge
                           variant="outline"
                           className={
-                            youth.engagementStatus === "at-risk"
+                            person.engagementStatus === "at-risk"
                               ? "status-at-risk"
                               : "status-disengaged"
                           }
                         >
-                          {youth.engagementStatus.replace("-", " ")}
+                          {person.engagementStatus.replace("-", " ")}
                         </Badge>
                       </div>
                     </div>
@@ -276,12 +271,11 @@ const Analytics = () => {
         </TabsContent>
 
         <TabsContent value="programs" className="space-y-6">
-          {/* Program Comparison */}
           <Card>
             <CardHeader>
-              <CardTitle>Program Effectiveness Comparison</CardTitle>
+              <CardTitle>{programLabel} Effectiveness Comparison</CardTitle>
               <CardDescription>
-                Compare engagement and attendance across programs
+                Compare engagement and {attendanceLabel.toLowerCase()} across {programLabel.toLowerCase()}
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -315,7 +309,7 @@ const Analytics = () => {
                     />
                     <Bar
                       dataKey="attendance"
-                      name="Avg Attendance"
+                      name={`Avg ${attendanceLabel}`}
                       fill="hsl(var(--chart-2))"
                       radius={[0, 4, 4, 0]}
                     />
@@ -325,7 +319,6 @@ const Analytics = () => {
             </CardContent>
           </Card>
 
-          {/* Program Cards */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {mockPrograms.slice(0, 6).map((program) => (
               <Card key={program.id}>
@@ -364,7 +357,7 @@ const Analytics = () => {
                   </div>
                   <div className="flex items-center gap-2 text-sm text-muted-foreground">
                     <Users className="h-4 w-4" />
-                    <span>Avg. {program.averageAttendance} attendees</span>
+                    <span>Avg. {program.averageAttendance} participants</span>
                   </div>
                 </CardContent>
               </Card>
@@ -374,11 +367,10 @@ const Analytics = () => {
 
         <TabsContent value="demographics" className="space-y-6">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {/* Age Distribution */}
             <Card>
               <CardHeader>
                 <CardTitle>Age Distribution</CardTitle>
-                <CardDescription>Breakdown of youth by age group</CardDescription>
+                <CardDescription>Breakdown of {memberLabel.toLowerCase()} by age group</CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="h-[280px]">
@@ -408,11 +400,10 @@ const Analytics = () => {
               </CardContent>
             </Card>
 
-            {/* Gender Distribution */}
             <Card>
               <CardHeader>
                 <CardTitle>Gender Distribution</CardTitle>
-                <CardDescription>Male vs Female ratio</CardDescription>
+                <CardDescription>Optional demographic profile for this organization</CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="h-[280px]">
@@ -442,25 +433,23 @@ const Analytics = () => {
             </Card>
           </div>
 
-          {/* Education/Work Status */}
           <Card>
             <CardHeader>
               <CardTitle>Education & Work Status</CardTitle>
-              <CardDescription>Distribution by education/employment status</CardDescription>
+              <CardDescription>Distribution by education and employment status</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 {[
-                  { label: "High School", count: 14, icon: "🎓" },
-                  { label: "College", count: 18, icon: "📚" },
-                  { label: "Working", count: 12, icon: "💼" },
-                  { label: "Other", count: 4, icon: "📋" },
+                  { label: "High School", count: 14 },
+                  { label: "College", count: 18 },
+                  { label: "Working", count: 12 },
+                  { label: "Other", count: 4 },
                 ].map((item) => (
                   <div
                     key={item.label}
                     className="p-4 rounded-lg bg-muted/50 text-center"
                   >
-                    <span className="text-2xl">{item.icon}</span>
                     <p className="text-2xl font-bold mt-2">{item.count}</p>
                     <p className="text-sm text-muted-foreground">{item.label}</p>
                   </div>
