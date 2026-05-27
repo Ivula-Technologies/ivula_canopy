@@ -1,5 +1,17 @@
 import { FormEvent, useMemo, useState, type ReactNode } from "react";
-import { AlertTriangle, Building2, Clock, LogIn, RefreshCw, UserPlus, Users } from "lucide-react";
+import {
+  AlertTriangle,
+  BarChart3,
+  Building2,
+  CheckCircle2,
+  Clock,
+  LogIn,
+  Network,
+  RefreshCw,
+  ShieldCheck,
+  UserPlus,
+  Users,
+} from "lucide-react";
 import { useAuth, type JoinableChurchRole, type SignupIntent } from "@/auth/AuthContext";
 import { resendSignupConfirmation } from "@/lib/supabaseRest";
 import { Button } from "@/components/ui/button";
@@ -14,6 +26,22 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+
+const platformHighlights = [
+  { icon: Users, title: "People & volunteers", description: "Keep member, participant, and volunteer records in one place." },
+  { icon: Network, title: "Programs & teams", description: "Coordinate groups, ministries, activities, and operating teams." },
+  { icon: BarChart3, title: "Engagement insights", description: "Spot participation trends, inactive people, and organizational health." },
+  { icon: ShieldCheck, title: "Role-based access", description: "Let owners, leaders, volunteers, and viewers see the right level of data." },
+];
+
+const organizationTypes = [
+  { value: "youth_program", label: "Youth program" },
+  { value: "church", label: "Church or ministry" },
+  { value: "nonprofit", label: "Nonprofit or NGO" },
+  { value: "school", label: "Campus fellowship or school group" },
+  { value: "club", label: "Club or local association" },
+  { value: "other", label: "Other mission-driven organization" },
+];
 
 function getAuthLinkError() {
   const hash = window.location.hash.startsWith("#") ? window.location.hash.slice(1) : "";
@@ -41,6 +69,7 @@ export function AuthGate({ children }: { children: ReactNode }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [signupMode, setSignupMode] = useState<"register_church" | "join_church">("register_church");
+  const [organizationType, setOrganizationType] = useState("youth_program");
   const [churchName, setChurchName] = useState("");
   const [joinCode, setJoinCode] = useState("");
   const [role, setRole] = useState<JoinableChurchRole>("viewer");
@@ -193,7 +222,7 @@ export function AuthGate({ children }: { children: ReactNode }) {
     setIsSubmitting(true);
 
     const intent: SignupIntent = signupMode === "register_church"
-      ? { type: "register_church", churchName: churchName.trim() || "My Organization" }
+      ? { type: "register_church", churchName: churchName.trim() || "My Organization", organizationType }
       : { type: "join_church", joinCode: joinCode.trim(), role };
 
     if (intent.type === "join_church" && !intent.joinCode) {
@@ -215,151 +244,220 @@ export function AuthGate({ children }: { children: ReactNode }) {
   }
 
   return (
-    <main className="min-h-screen bg-background flex items-center justify-center p-4">
-      <Card className="w-full max-w-md">
-        <CardHeader className="space-y-3">
-          <img src="/ivula-mark.svg" alt="Ivula Canopy logo" className="h-12 w-12 rounded-lg object-contain bg-white p-1" />
-          <div>
-            <CardTitle>Ivula Canopy</CardTitle>
-            <CardDescription>Sign in or create access for your organization</CardDescription>
+    <main className="min-h-screen bg-background">
+      <div className="mx-auto grid min-h-screen w-full max-w-7xl grid-cols-1 items-center gap-8 px-4 py-8 lg:grid-cols-[1.05fr_0.95fr] lg:px-8">
+        <section className="space-y-8">
+          <div className="flex items-center gap-3">
+            <img src="/ivula-mark.svg" alt="Ivula Canopy logo" className="h-11 w-11 rounded-lg object-contain bg-white p-1 shadow-sm" />
+            <div>
+              <p className="text-lg font-semibold leading-tight">Ivula Canopy</p>
+              <p className="text-sm text-muted-foreground">Operations for mission-driven organizations</p>
+            </div>
           </div>
-        </CardHeader>
-        <CardContent>
-          <Tabs defaultValue="signin" className="space-y-4" onValueChange={() => { setError(null); setNotice(null); }}>
-            <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger value="signin">Sign in</TabsTrigger>
-              <TabsTrigger value="signup">Sign up</TabsTrigger>
-            </TabsList>
 
-            <TabsContent value="signin">
-              <form onSubmit={handleSignIn} className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="signin-email">Email</Label>
-                  <Input
-                    id="signin-email"
-                    type="email"
-                    autoComplete="email"
-                    value={email}
-                    onChange={(event) => setEmail(event.target.value)}
-                    required
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="signin-password">Password</Label>
-                  <Input
-                    id="signin-password"
-                    type="password"
-                    autoComplete="current-password"
-                    value={password}
-                    onChange={(event) => setPassword(event.target.value)}
-                    required
-                  />
-                </div>
-                {(error || accessError) && <p className="text-sm text-destructive">{error || accessError}</p>}
-                {notice && <p className="text-sm text-muted-foreground">{notice}</p>}
-                <Button type="submit" className="w-full" disabled={isSubmitting}>
-                  <LogIn className="h-4 w-4 mr-2" />
-                  {isSubmitting ? "Signing in..." : "Sign In"}
-                </Button>
-              </form>
-            </TabsContent>
+          <div className="max-w-2xl space-y-5">
+            <div className="inline-flex items-center gap-2 rounded-full border bg-muted/50 px-3 py-1 text-sm text-muted-foreground">
+              <CheckCircle2 className="h-4 w-4 text-primary" />
+              Built for churches, nonprofits, campus groups, and community teams
+            </div>
+            <div className="space-y-4">
+              <h1 className="text-4xl font-bold leading-tight tracking-normal sm:text-5xl lg:text-6xl">
+                Organize your community from one place.
+              </h1>
+              <p className="max-w-xl text-lg leading-8 text-muted-foreground">
+                Manage people, volunteers, programs, teams, and engagement insights with a modern platform built for real organizational work.
+              </p>
+            </div>
+          </div>
 
-            <TabsContent value="signup">
-              <form onSubmit={handleSignUp} className="space-y-4">
-                <div className="grid grid-cols-2 gap-2">
-                  <Button
-                    type="button"
-                    variant={signupMode === "register_church" ? "default" : "outline"}
-                    className="h-auto justify-start gap-2 py-3"
-                    onClick={() => setSignupMode("register_church")}
-                  >
-                    <Building2 className="h-4 w-4" />
-                    <span className="text-left text-xs leading-tight">Register organization</span>
-                  </Button>
-                  <Button
-                    type="button"
-                    variant={signupMode === "join_church" ? "default" : "outline"}
-                    className="h-auto justify-start gap-2 py-3"
-                    onClick={() => setSignupMode("join_church")}
-                  >
-                    <Users className="h-4 w-4" />
-                    <span className="text-left text-xs leading-tight">Join organization</span>
-                  </Button>
+          <div className="grid max-w-3xl grid-cols-1 gap-3 sm:grid-cols-2">
+            {platformHighlights.map((item) => {
+              const Icon = item.icon;
+              return (
+                <div key={item.title} className="rounded-lg border bg-card/70 p-4 shadow-sm">
+                  <div className="mb-3 flex h-9 w-9 items-center justify-center rounded-md bg-primary/10 text-primary">
+                    <Icon className="h-5 w-5" />
+                  </div>
+                  <h2 className="text-sm font-semibold">{item.title}</h2>
+                  <p className="mt-1 text-sm leading-6 text-muted-foreground">{item.description}</p>
                 </div>
+              );
+            })}
+          </div>
 
-                <div className="space-y-2">
-                  <Label htmlFor="signup-email">Email</Label>
-                  <Input
-                    id="signup-email"
-                    type="email"
-                    autoComplete="email"
-                    value={email}
-                    onChange={(event) => setEmail(event.target.value)}
-                    required
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="signup-password">Password</Label>
-                  <Input
-                    id="signup-password"
-                    type="password"
-                    autoComplete="new-password"
-                    value={password}
-                    onChange={(event) => setPassword(event.target.value)}
-                    required
-                    minLength={6}
-                  />
-                </div>
+          <div className="flex flex-wrap gap-2 text-sm text-muted-foreground">
+            {organizationTypes.slice(1, 5).map((type) => (
+              <span key={type.value} className="rounded-full border bg-background px-3 py-1">{type.label}</span>
+            ))}
+          </div>
+        </section>
 
-                {signupMode === "register_church" ? (
+        <Card className="w-full border-border/80 shadow-xl">
+          <CardHeader className="space-y-3">
+            <div className="flex items-center gap-3 lg:hidden">
+              <img src="/ivula-mark.svg" alt="Ivula Canopy logo" className="h-10 w-10 rounded-lg object-contain bg-white p-1" />
+              <div>
+                <CardTitle>Ivula Canopy</CardTitle>
+                <CardDescription>Create access for your organization</CardDescription>
+              </div>
+            </div>
+            <div className="hidden lg:block">
+              <CardTitle>Get started</CardTitle>
+              <CardDescription>Sign in, register an organization, or join with an invitation code.</CardDescription>
+            </div>
+          </CardHeader>
+          <CardContent>
+            <Tabs defaultValue="signin" className="space-y-4" onValueChange={() => { setError(null); setNotice(null); }}>
+              <TabsList className="grid w-full grid-cols-2">
+                <TabsTrigger value="signin">Sign in</TabsTrigger>
+                <TabsTrigger value="signup">Sign up</TabsTrigger>
+              </TabsList>
+
+              <TabsContent value="signin">
+                <form onSubmit={handleSignIn} className="space-y-4">
                   <div className="space-y-2">
-                    <Label htmlFor="church-name">Organization name</Label>
+                    <Label htmlFor="signin-email">Email</Label>
                     <Input
-                      id="church-name"
-                      value={churchName}
-                      onChange={(event) => setChurchName(event.target.value)}
-                      placeholder="Faith Community Church, youth nonprofit, school club..."
+                      id="signin-email"
+                      type="email"
+                      autoComplete="email"
+                      value={email}
+                      onChange={(event) => setEmail(event.target.value)}
+                      required
                     />
                   </div>
-                ) : (
-                  <>
-                    <div className="space-y-2">
-                      <Label htmlFor="join-code">Organization join code</Label>
-                      <Input
-                        id="join-code"
-                        value={joinCode}
-                        onChange={(event) => setJoinCode(event.target.value.toUpperCase())}
-                        placeholder="AB12CD34EF"
-                        required
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label>Access level</Label>
-                      <Select value={role} onValueChange={(value) => setRole(value as JoinableChurchRole)}>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Choose access level" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="viewer">Regular member</SelectItem>
-                          <SelectItem value="volunteer">Volunteer</SelectItem>
-                          <SelectItem value="leader">Leader</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                  </>
-                )}
+                  <div className="space-y-2">
+                    <Label htmlFor="signin-password">Password</Label>
+                    <Input
+                      id="signin-password"
+                      type="password"
+                      autoComplete="current-password"
+                      value={password}
+                      onChange={(event) => setPassword(event.target.value)}
+                      required
+                    />
+                  </div>
+                  {(error || accessError) && <p className="text-sm text-destructive">{error || accessError}</p>}
+                  {notice && <p className="text-sm text-muted-foreground">{notice}</p>}
+                  <Button type="submit" className="w-full" disabled={isSubmitting}>
+                    <LogIn className="h-4 w-4 mr-2" />
+                    {isSubmitting ? "Signing in..." : "Sign In"}
+                  </Button>
+                </form>
+              </TabsContent>
 
-                {(error || accessError) && <p className="text-sm text-destructive">{error || accessError}</p>}
-                {notice && <p className="text-sm text-muted-foreground">{notice}</p>}
-                <Button type="submit" className="w-full" disabled={isSubmitting}>
-                  <UserPlus className="h-4 w-4 mr-2" />
-                  {isSubmitting ? "Creating account..." : "Create Account"}
-                </Button>
-              </form>
-            </TabsContent>
-          </Tabs>
-        </CardContent>
-      </Card>
+              <TabsContent value="signup">
+                <form onSubmit={handleSignUp} className="space-y-4">
+                  <div className="grid grid-cols-2 gap-2">
+                    <Button
+                      type="button"
+                      variant={signupMode === "register_church" ? "default" : "outline"}
+                      className="h-auto justify-start gap-2 py-3"
+                      onClick={() => setSignupMode("register_church")}
+                    >
+                      <Building2 className="h-4 w-4" />
+                      <span className="text-left text-xs leading-tight">Register organization</span>
+                    </Button>
+                    <Button
+                      type="button"
+                      variant={signupMode === "join_church" ? "default" : "outline"}
+                      className="h-auto justify-start gap-2 py-3"
+                      onClick={() => setSignupMode("join_church")}
+                    >
+                      <Users className="h-4 w-4" />
+                      <span className="text-left text-xs leading-tight">Join organization</span>
+                    </Button>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="signup-email">Email</Label>
+                    <Input
+                      id="signup-email"
+                      type="email"
+                      autoComplete="email"
+                      value={email}
+                      onChange={(event) => setEmail(event.target.value)}
+                      required
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="signup-password">Password</Label>
+                    <Input
+                      id="signup-password"
+                      type="password"
+                      autoComplete="new-password"
+                      value={password}
+                      onChange={(event) => setPassword(event.target.value)}
+                      required
+                      minLength={6}
+                    />
+                  </div>
+
+                  {signupMode === "register_church" ? (
+                    <>
+                      <div className="space-y-2">
+                        <Label htmlFor="organization-type">Organization type</Label>
+                        <Select value={organizationType} onValueChange={setOrganizationType}>
+                          <SelectTrigger id="organization-type">
+                            <SelectValue placeholder="Choose organization type" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {organizationTypes.map((type) => (
+                              <SelectItem key={type.value} value={type.value}>{type.label}</SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="church-name">Organization name</Label>
+                        <Input
+                          id="church-name"
+                          value={churchName}
+                          onChange={(event) => setChurchName(event.target.value)}
+                          placeholder="Bright Future Youth, local church, campus fellowship..."
+                        />
+                      </div>
+                    </>
+                  ) : (
+                    <>
+                      <div className="space-y-2">
+                        <Label htmlFor="join-code">Organization join code</Label>
+                        <Input
+                          id="join-code"
+                          value={joinCode}
+                          onChange={(event) => setJoinCode(event.target.value.toUpperCase())}
+                          placeholder="AB12CD34EF"
+                          required
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label>Access level</Label>
+                        <Select value={role} onValueChange={(value) => setRole(value as JoinableChurchRole)}>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Choose access level" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="viewer">Regular member</SelectItem>
+                            <SelectItem value="volunteer">Volunteer</SelectItem>
+                            <SelectItem value="leader">Leader</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    </>
+                  )}
+
+                  {(error || accessError) && <p className="text-sm text-destructive">{error || accessError}</p>}
+                  {notice && <p className="text-sm text-muted-foreground">{notice}</p>}
+                  <Button type="submit" className="w-full" disabled={isSubmitting}>
+                    <UserPlus className="h-4 w-4 mr-2" />
+                    {isSubmitting ? "Creating account..." : "Create Account"}
+                  </Button>
+                </form>
+              </TabsContent>
+            </Tabs>
+          </CardContent>
+        </Card>
+      </div>
     </main>
   );
 }
