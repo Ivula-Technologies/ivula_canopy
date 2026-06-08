@@ -25,6 +25,16 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -42,6 +52,8 @@ import {
   GraduationCap,
   Briefcase,
   UserX,
+  Pencil,
+  Trash2,
 } from "lucide-react";
 import { useAuth } from "@/auth/AuthContext";
 import { cn } from "@/lib/utils";
@@ -88,25 +100,45 @@ const memberStats = {
   unemployed: mockYouths.filter(y => y.educationStatus === "unemployed").length,
 };
 
+type ProgramDraft = {
+  name: string;
+  description: string;
+  category: Program["category"];
+  schedule: string;
+  scheduleType: Program["scheduleType"];
+  leader: string;
+  maxCapacity: string;
+};
+
+const emptyDraft: ProgramDraft = {
+  name: "",
+  description: "",
+  category: "outreach",
+  schedule: "",
+  scheduleType: "weekday",
+  leader: "",
+  maxCapacity: "",
+};
+
 const Programs = () => {
-  const { activeMembership } = useAuth();
+  const { activeMembership, canEditRecords, canManageChurch } = useAuth();
   const programLabel = activeMembership?.programLabel ?? "Programs";
   const memberLabel = activeMembership?.memberLabel ?? "People";
   const primaryFocus = activeMembership?.primaryFocus ?? "Programs";
   const [programs, setPrograms] = useLocalStorage<Program[]>(STORAGE_KEYS.PROGRAMS, mockPrograms);
   const [categoryFilter, setCategoryFilter] = useState("all");
   const [scheduleFilter, setScheduleFilter] = useState("all");
+
+  // Create / Edit dialog
   const [isProgramDialogOpen, setIsProgramDialogOpen] = useState(false);
+  const [editingProgramId, setEditingProgramId] = useState<string | null>(null);
+  const [programDraft, setProgramDraft] = useState<ProgramDraft>(emptyDraft);
+
+  // View details dialog
   const [selectedProgram, setSelectedProgram] = useState<Program | null>(null);
-  const [programDraft, setProgramDraft] = useState({
-    name: "",
-    description: "",
-    category: "outreach" as Program["category"],
-    schedule: "",
-    scheduleType: "weekday" as Program["scheduleType"],
-    leader: "",
-    maxCapacity: "",
-  });
+
+  // Delete confirmation
+  const [deletingProgram, setDeletingProgram] = useState<Program | null>(null);
 
   const filteredPrograms = programs.filter((program) => {
     const categoryMatch = categoryFilter === "all" || program.category === categoryFilter;
@@ -122,15 +154,23 @@ const Programs = () => {
   const weekendPrograms = programs.filter((p) => p.scheduleType === "sabbath").length;
 
   const openAddProgram = () => {
+    setEditingProgramId(null);
+    setProgramDraft(emptyDraft);
+    setIsProgramDialogOpen(true);
+  };
+
+  const openEditProgram = (program: Program) => {
+    setEditingProgramId(program.id);
     setProgramDraft({
-      name: "",
-      description: "",
-      category: "outreach",
-      schedule: "",
-      scheduleType: "weekday",
-      leader: "",
-      maxCapacity: "",
+      name: program.name,
+      description: program.description,
+      category: program.category,
+      schedule: program.schedule,
+      scheduleType: program.scheduleType,
+      leader: program.leader,
+      maxCapacity: program.maxCapacity ? String(program.maxCapacity) : "",
     });
+    setSelectedProgram(null);
     setIsProgramDialogOpen(true);
   };
 
@@ -138,32 +178,62 @@ const Programs = () => {
     if (!programDraft.name.trim() || !programDraft.description.trim()) {
       toast({
         title: "Program details needed",
-        description: `Add a name and description before saving this ${programLabel.toLowerCase()}.`,
+        description: `Add a name and description before saving.`,
         variant: "destructive",
       });
       return;
     }
 
-    const nextProgram: Program = {
-      id: crypto.randomUUID(),
-      name: programDraft.name.trim(),
-      description: programDraft.description.trim(),
-      category: programDraft.category,
-      startDate: new Date().toISOString().split("T")[0],
-      isActive: true,
-      participantCount: 0,
-      maxCapacity: programDraft.maxCapacity ? Number(programDraft.maxCapacity) : undefined,
-      leader: programDraft.leader.trim() || "Unassigned",
-      schedule: programDraft.schedule.trim() || "Schedule not set",
-      scheduleType: programDraft.scheduleType,
-      averageAttendance: 0,
-      engagementScore: 0,
-      memberBreakdown: { students: 0, employed: 0, unemployed: 0 },
-    };
+    if (editingProgramId) {
+      // Update existing
+      setPrograms((current) =>
+        current.map((p) =>
+          p.id === editingProgramId
+            ? {
+                ...p,
+                name: programDraft.name.trim(),
+                description: programDraft.description.trim(),
+                category: programDraft.category,
+                schedule: programDraft.schedule.trim() || p.schedule,
+                scheduleType: programDraft.scheduleType,
+                leader: programDraft.leader.trim() || p.leader,
+                maxCapacity: programDraft.maxCapacity ? Number(programDraft.maxCapacity) : undefined,
+              }
+            : p
+        )
+      );
+      toast({ title: `${programLabel} updated`, description: `${programDraft.name} has been saved.` });
+    } else {
+      // Create new
+      const nextProgram: Program = {
+        id: crypto.randomUUID(),
+        name: programDraft.name.trim(),
+        description: programDraft.description.trim(),
+        category: programDraft.category,
+        startDate: new Date().toISOString().split("T")[0],
+        isActive: true,
+        participantCount: 0,
+        maxCapacity: programDraft.maxCapacity ? Number(programDraft.maxCapacity) : undefined,
+        leader: programDraft.leader.trim() || "Unassigned",
+        schedule: programDraft.schedule.trim() || "Schedule not set",
+        scheduleType: programDraft.scheduleType,
+        averageAttendance: 0,
+        engagementScore: 0,
+        memberBreakdown: { students: 0, employed: 0, unemployed: 0 },
+      };
+      setPrograms((current) => [nextProgram, ...current]);
+      toast({ title: `${programLabel} saved`, description: `${nextProgram.name} is now available.` });
+    }
 
-    setPrograms((current) => [nextProgram, ...current]);
     setIsProgramDialogOpen(false);
-    toast({ title: `${programLabel} saved`, description: `${nextProgram.name} is now available.` });
+    setEditingProgramId(null);
+  };
+
+  const confirmDelete = () => {
+    if (!deletingProgram) return;
+    setPrograms((current) => current.filter((p) => p.id !== deletingProgram.id));
+    toast({ title: `${programLabel} deleted`, description: `${deletingProgram.name} has been removed.` });
+    setDeletingProgram(null);
   };
 
   return (
@@ -173,10 +243,12 @@ const Programs = () => {
           <h1 className="page-title">{programLabel} & Activities</h1>
           <p className="page-description">Track and manage {primaryFocus.toLowerCase()} for your organization.</p>
         </div>
-        <Button size="sm" onClick={openAddProgram}>
-          <Plus className="h-4 w-4 mr-2" />
-          Add New
-        </Button>
+        {canEditRecords && (
+          <Button size="sm" onClick={openAddProgram}>
+            <Plus className="h-4 w-4 mr-2" />
+            Add New
+          </Button>
+        )}
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -379,8 +451,20 @@ const Programs = () => {
                   <Progress value={program.engagementScore} className="h-2" />
                 </div>
 
-                <div className="pt-2">
-                  <Button variant="outline" size="sm" className="w-full" onClick={() => setSelectedProgram(program)}>View Details</Button>
+                <div className="flex gap-2 pt-2">
+                  <Button variant="outline" size="sm" className="flex-1" onClick={() => setSelectedProgram(program)}>
+                    View Details
+                  </Button>
+                  {canEditRecords && (
+                    <Button variant="outline" size="icon" onClick={() => openEditProgram(program)} title="Edit">
+                      <Pencil className="h-4 w-4" />
+                    </Button>
+                  )}
+                  {canManageChurch && (
+                    <Button variant="outline" size="icon" className="text-destructive hover:text-destructive" onClick={() => setDeletingProgram(program)} title="Delete">
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  )}
                 </div>
               </CardContent>
             </Card>
@@ -388,25 +472,28 @@ const Programs = () => {
         })}
       </div>
 
-      <Dialog open={isProgramDialogOpen} onOpenChange={setIsProgramDialogOpen}>
+      {/* Create / Edit dialog */}
+      <Dialog open={isProgramDialogOpen} onOpenChange={(open) => { setIsProgramDialogOpen(open); if (!open) setEditingProgramId(null); }}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Add {programLabel}</DialogTitle>
-            <DialogDescription>Create a program, activity, team rhythm, or event for this organization.</DialogDescription>
+            <DialogTitle>{editingProgramId ? `Edit ${programLabel}` : `Add ${programLabel}`}</DialogTitle>
+            <DialogDescription>
+              {editingProgramId ? "Update the details for this program." : "Create a program, activity, team rhythm, or event for this organization."}
+            </DialogDescription>
           </DialogHeader>
           <div className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="program-name">Name</Label>
-              <Input id="program-name" value={programDraft.name} onChange={(event) => setProgramDraft((draft) => ({ ...draft, name: event.target.value }))} />
+              <Input id="program-name" value={programDraft.name} onChange={(e) => setProgramDraft((d) => ({ ...d, name: e.target.value }))} />
             </div>
             <div className="space-y-2">
               <Label htmlFor="program-description">Description</Label>
-              <Textarea id="program-description" value={programDraft.description} onChange={(event) => setProgramDraft((draft) => ({ ...draft, description: event.target.value }))} />
+              <Textarea id="program-description" value={programDraft.description} onChange={(e) => setProgramDraft((d) => ({ ...d, description: e.target.value }))} />
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label>Category</Label>
-                <Select value={programDraft.category} onValueChange={(value) => setProgramDraft((draft) => ({ ...draft, category: value as Program["category"] }))}>
+                <Select value={programDraft.category} onValueChange={(v) => setProgramDraft((d) => ({ ...d, category: v as Program["category"] }))}>
                   <SelectTrigger><SelectValue /></SelectTrigger>
                   <SelectContent>
                     <SelectItem value="worship">Gathering</SelectItem>
@@ -420,7 +507,7 @@ const Programs = () => {
               </div>
               <div className="space-y-2">
                 <Label>Schedule Type</Label>
-                <Select value={programDraft.scheduleType} onValueChange={(value) => setProgramDraft((draft) => ({ ...draft, scheduleType: value as Program["scheduleType"] }))}>
+                <Select value={programDraft.scheduleType} onValueChange={(v) => setProgramDraft((d) => ({ ...d, scheduleType: v as Program["scheduleType"] }))}>
                   <SelectTrigger><SelectValue /></SelectTrigger>
                   <SelectContent>
                     <SelectItem value="sabbath">Weekend</SelectItem>
@@ -431,27 +518,28 @@ const Programs = () => {
               </div>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-              <div className="space-y-2 sm:col-span-1">
+              <div className="space-y-2">
                 <Label htmlFor="program-leader">Lead</Label>
-                <Input id="program-leader" value={programDraft.leader} onChange={(event) => setProgramDraft((draft) => ({ ...draft, leader: event.target.value }))} />
+                <Input id="program-leader" value={programDraft.leader} onChange={(e) => setProgramDraft((d) => ({ ...d, leader: e.target.value }))} />
               </div>
-              <div className="space-y-2 sm:col-span-1">
+              <div className="space-y-2">
                 <Label htmlFor="program-schedule">Schedule</Label>
-                <Input id="program-schedule" value={programDraft.schedule} onChange={(event) => setProgramDraft((draft) => ({ ...draft, schedule: event.target.value }))} placeholder="Tuesdays at 6 PM" />
+                <Input id="program-schedule" value={programDraft.schedule} onChange={(e) => setProgramDraft((d) => ({ ...d, schedule: e.target.value }))} placeholder="Tuesdays at 6 PM" />
               </div>
-              <div className="space-y-2 sm:col-span-1">
+              <div className="space-y-2">
                 <Label htmlFor="program-capacity">Capacity</Label>
-                <Input id="program-capacity" type="number" min="0" value={programDraft.maxCapacity} onChange={(event) => setProgramDraft((draft) => ({ ...draft, maxCapacity: event.target.value }))} />
+                <Input id="program-capacity" type="number" min="0" value={programDraft.maxCapacity} onChange={(e) => setProgramDraft((d) => ({ ...d, maxCapacity: e.target.value }))} />
               </div>
             </div>
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setIsProgramDialogOpen(false)}>Cancel</Button>
-            <Button onClick={saveProgram}>Save {programLabel}</Button>
+            <Button onClick={saveProgram}>{editingProgramId ? "Save Changes" : `Save ${programLabel}`}</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
 
+      {/* View details dialog */}
       <Dialog open={!!selectedProgram} onOpenChange={(open) => !open && setSelectedProgram(null)}>
         <DialogContent>
           {selectedProgram && (
@@ -475,16 +563,40 @@ const Programs = () => {
                 </div>
                 <div>
                   <p className="text-muted-foreground">Participants</p>
-                  <p className="font-medium">{selectedProgram.participantCount}</p>
+                  <p className="font-medium">{selectedProgram.participantCount}{selectedProgram.maxCapacity ? ` / ${selectedProgram.maxCapacity}` : ""}</p>
                 </div>
               </div>
-              <DialogFooter>
+              <DialogFooter className="gap-2">
+                {canEditRecords && (
+                  <Button variant="outline" onClick={() => openEditProgram(selectedProgram)}>
+                    <Pencil className="h-4 w-4 mr-2" />
+                    Edit
+                  </Button>
+                )}
                 <Button variant="outline" onClick={() => setSelectedProgram(null)}>Close</Button>
               </DialogFooter>
             </>
           )}
         </DialogContent>
       </Dialog>
+
+      {/* Delete confirmation */}
+      <AlertDialog open={!!deletingProgram} onOpenChange={(open) => !open && setDeletingProgram(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete {programLabel}?</AlertDialogTitle>
+            <AlertDialogDescription>
+              <strong>{deletingProgram?.name}</strong> will be permanently removed. This cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction className="bg-destructive text-destructive-foreground hover:bg-destructive/90" onClick={confirmDelete}>
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };
