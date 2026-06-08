@@ -227,13 +227,15 @@ async function loadYouths(): Promise<Youth[]> {
 }
 
 async function syncYouths(youths: Youth[]) {
-  if (youths.length > 0) {
-    await supabaseRequest("youths?on_conflict=id", {
-      method: "POST",
-      headers: { Prefer: "resolution=merge-duplicates" },
-      body: JSON.stringify(youths.map(fromYouth)),
-    });
-  }
+  // Never sync an empty array — it could wipe all tenant data during
+  // an initial render before Supabase has hydrated the local state.
+  if (youths.length === 0) return;
+
+  await supabaseRequest("youths?on_conflict=id", {
+    method: "POST",
+    headers: { Prefer: "resolution=merge-duplicates" },
+    body: JSON.stringify(youths.map(fromYouth)),
+  });
   await replaceDeletedRows(
     "youths",
     youths.map((youth) => youth.id)
@@ -249,13 +251,13 @@ async function loadAttendance(): Promise<AttendanceRecord[]> {
 }
 
 async function syncAttendance(records: AttendanceRecord[]) {
-  if (records.length > 0) {
-    await supabaseRequest("attendance_records?on_conflict=id", {
-      method: "POST",
-      headers: { Prefer: "resolution=merge-duplicates" },
-      body: JSON.stringify(records.map(fromAttendance)),
-    });
-  }
+  if (records.length === 0) return;
+
+  await supabaseRequest("attendance_records?on_conflict=id", {
+    method: "POST",
+    headers: { Prefer: "resolution=merge-duplicates" },
+    body: JSON.stringify(records.map(fromAttendance)),
+  });
   await replaceDeletedRows(
     "attendance_records",
     records.map((record) => record.id)
@@ -271,13 +273,13 @@ async function loadPrograms(): Promise<Program[]> {
 }
 
 async function syncPrograms(programs: Program[]) {
-  if (programs.length > 0) {
-    await supabaseRequest("programs?on_conflict=id", {
-      method: "POST",
-      headers: { Prefer: "resolution=merge-duplicates" },
-      body: JSON.stringify(programs.map(fromProgram)),
-    });
-  }
+  if (programs.length === 0) return;
+
+  await supabaseRequest("programs?on_conflict=id", {
+    method: "POST",
+    headers: { Prefer: "resolution=merge-duplicates" },
+    body: JSON.stringify(programs.map(fromProgram)),
+  });
   await replaceDeletedRows(
     "programs",
     programs.map((program) => program.id)

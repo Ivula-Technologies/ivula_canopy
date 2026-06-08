@@ -359,12 +359,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       },
       async applyIntent(intent: SignupIntent) {
         if (!session) throw new Error("Not signed in");
-        const nextMemberships = await applySignupIntent(session, intent);
-        setMemberships(nextMemberships);
-        const activeMemberships = nextMemberships.filter((m) => m.status === "active");
-        const nextActive = activeMemberships[0] ?? null;
-        storeActiveChurchId(nextActive?.churchId ?? null);
-        setActiveChurchId(nextActive?.churchId ?? null);
+        await applySignupIntent(session, intent);
+        // Re-fetch fully hydrated memberships (labels, church details) rather than
+        // using the potentially stale pre-refresh rows returned by applySignupIntent.
+        await loadAccess(session);
       },
       async signIn(email, password) {
         const nextSession = await signInWithPassword(email, password);
@@ -386,6 +384,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       signOut() {
         storeSession(null);
         storePendingSignupIntent(null);
+        // Remove all tenant-scoped localStorage data so a subsequent
+        // sign-in as a different user never sees another user's data.
+        const prefix = "ivula_canopy_";
+        Object.keys(window.localStorage)
+          .filter((k) => k.startsWith(prefix))
+          .forEach((k) => window.localStorage.removeItem(k));
         setSession(null);
         setMemberships([]);
         setActiveChurchId(null);
