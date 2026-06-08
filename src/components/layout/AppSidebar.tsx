@@ -21,25 +21,32 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { useAuth } from "@/auth/AuthContext";
 
-const mainNavItems = [
-  { title: "Dashboard", url: "/", icon: LayoutDashboard },
-  { title: "People Directory", url: "/directory", icon: Users },
-  { title: "Programs", url: "/programs", icon: Calendar },
-  { title: "Communications", url: "/communications", icon: Megaphone },
-  { title: "Analytics", url: "/analytics", icon: BarChart3 },
-  { title: "Reports", url: "/reports", icon: FileText },
+const allMainNavItems = [
+  { title: "Dashboard", url: "/", icon: LayoutDashboard, requiresExport: false, requiresManage: false },
+  { title: "People Directory", url: "/directory", icon: Users, requiresExport: false, requiresManage: false },
+  { title: "Programs", url: "/programs", icon: Calendar, requiresExport: false, requiresManage: false },
+  { title: "Communications", url: "/communications", icon: Megaphone, requiresExport: false, requiresManage: false },
+  { title: "Analytics", url: "/analytics", icon: BarChart3, requiresExport: false, requiresManage: false },
+  { title: "Reports", url: "/reports", icon: FileText, requiresExport: true, requiresManage: false },
 ];
 
-const bottomNavItems = [
-  { title: "Team", url: "/team", icon: UserCog },
-  { title: "Admin", url: "/admin", icon: Shield },
-  { title: "Settings", url: "/settings", icon: Settings },
+const allBottomNavItems = [
+  { title: "Team", url: "/team", icon: UserCog, requiresManage: true },
+  { title: "Admin", url: "/admin", icon: Shield, requiresManage: true },
+  { title: "Settings", url: "/settings", icon: Settings, requiresManage: true },
 ];
 
 export function AppSidebar() {
   const [collapsed, setCollapsed] = useState(false);
   const location = useLocation();
+  const { canManageChurch, canExportRecords } = useAuth();
+
+  const mainNavItems = allMainNavItems.filter(
+    (item) => (!item.requiresExport || canExportRecords) && (!item.requiresManage || canManageChurch)
+  );
+  const bottomNavItems = allBottomNavItems.filter((item) => !item.requiresManage || canManageChurch);
 
   const isActive = (path: string) => {
     if (path === "/") return location.pathname === "/";

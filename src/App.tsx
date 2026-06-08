@@ -2,20 +2,10 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter } from "react-router-dom";
 import { AuthProvider } from "@/auth/AuthContext";
 import { AuthGate } from "@/components/auth/AuthGate";
-import { AppLayout } from "@/components/layout/AppLayout";
-import Dashboard from "./pages/Dashboard";
-import YouthDirectory from "./pages/YouthDirectory";
-import Programs from "./pages/Programs";
-import Communications from "./pages/Communications";
-import Analytics from "./pages/Analytics";
-import Reports from "./pages/Reports";
-import Team from "./pages/Team";
-import Admin from "./pages/Admin";
-import Settings from "./pages/Settings";
-import NotFound from "./pages/NotFound";
+import { AppRouter } from "@/components/AppRouter";
 
 const queryClient = new QueryClient();
 
@@ -27,21 +17,7 @@ const App = () => (
         <Sonner />
         <BrowserRouter>
           <AuthGate>
-            <AppLayout>
-              <Routes>
-                <Route path="/" element={<Dashboard />} />
-                <Route path="/directory" element={<YouthDirectory />} />
-                <Route path="/programs" element={<Programs />} />
-                <Route path="/communications" element={<Communications />} />
-                <Route path="/analytics" element={<Analytics />} />
-                <Route path="/reports" element={<Reports />} />
-                <Route path="/team" element={<Team />} />
-                <Route path="/admin" element={<Admin />} />
-                <Route path="/settings" element={<Settings />} />
-                {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-                <Route path="*" element={<NotFound />} />
-              </Routes>
-            </AppLayout>
+            <AppRouter />
           </AuthGate>
         </BrowserRouter>
       </AuthProvider>

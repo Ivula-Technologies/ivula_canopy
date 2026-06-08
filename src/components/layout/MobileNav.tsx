@@ -18,20 +18,21 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
+import { useAuth } from "@/auth/AuthContext";
 
-const mainNavItems = [
-  { title: "Dashboard", url: "/", icon: LayoutDashboard },
-  { title: "People Directory", url: "/directory", icon: Users },
-  { title: "Programs", url: "/programs", icon: Calendar },
-  { title: "Communications", url: "/communications", icon: Megaphone },
-  { title: "Analytics", url: "/analytics", icon: BarChart3 },
-  { title: "Reports", url: "/reports", icon: FileText },
+const allMainNavItems = [
+  { title: "Dashboard", url: "/", icon: LayoutDashboard, requiresExport: false, requiresManage: false },
+  { title: "People Directory", url: "/directory", icon: Users, requiresExport: false, requiresManage: false },
+  { title: "Programs", url: "/programs", icon: Calendar, requiresExport: false, requiresManage: false },
+  { title: "Communications", url: "/communications", icon: Megaphone, requiresExport: false, requiresManage: false },
+  { title: "Analytics", url: "/analytics", icon: BarChart3, requiresExport: false, requiresManage: false },
+  { title: "Reports", url: "/reports", icon: FileText, requiresExport: true, requiresManage: false },
 ];
 
-const bottomNavItems = [
-  { title: "Team", url: "/team", icon: UserCog },
-  { title: "Admin", url: "/admin", icon: Shield },
-  { title: "Settings", url: "/settings", icon: Settings },
+const allBottomNavItems = [
+  { title: "Team", url: "/team", icon: UserCog, requiresManage: true },
+  { title: "Admin", url: "/admin", icon: Shield, requiresManage: true },
+  { title: "Settings", url: "/settings", icon: Settings, requiresManage: true },
 ];
 
 interface MobileNavProps {
@@ -41,6 +42,12 @@ interface MobileNavProps {
 
 export function MobileNav({ open, onOpenChange }: MobileNavProps) {
   const location = useLocation();
+  const { canManageChurch, canExportRecords } = useAuth();
+
+  const mainNavItems = allMainNavItems.filter(
+    (item) => (!item.requiresExport || canExportRecords) && (!item.requiresManage || canManageChurch)
+  );
+  const bottomNavItems = allBottomNavItems.filter((item) => !item.requiresManage || canManageChurch);
 
   const isActive = (path: string) => {
     if (path === "/") return location.pathname === "/";
@@ -82,29 +89,31 @@ export function MobileNav({ open, onOpenChange }: MobileNavProps) {
             })}
           </div>
 
-          <div className="px-3 py-4 border-t border-border space-y-1">
-            {bottomNavItems.map((item) => {
-              const active = isActive(item.url);
-              return (
-                <NavLink
-                  key={item.title}
-                  to={item.url}
-                  onClick={() => onOpenChange(false)}
-                  className={cn(
-                    "flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200",
-                    "hover:bg-primary/10",
-                    active && "bg-primary text-primary-foreground hover:bg-primary/90"
-                  )}
-                  activeClassName=""
-                >
-                  <item.icon className={cn("h-5 w-5", active && "text-primary-foreground")} />
-                  <span className={cn("font-medium", active && "text-primary-foreground")}>
-                    {item.title}
-                  </span>
-                </NavLink>
-              );
-            })}
-          </div>
+          {bottomNavItems.length > 0 && (
+            <div className="px-3 py-4 border-t border-border space-y-1">
+              {bottomNavItems.map((item) => {
+                const active = isActive(item.url);
+                return (
+                  <NavLink
+                    key={item.title}
+                    to={item.url}
+                    onClick={() => onOpenChange(false)}
+                    className={cn(
+                      "flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200",
+                      "hover:bg-primary/10",
+                      active && "bg-primary text-primary-foreground hover:bg-primary/90"
+                    )}
+                    activeClassName=""
+                  >
+                    <item.icon className={cn("h-5 w-5", active && "text-primary-foreground")} />
+                    <span className={cn("font-medium", active && "text-primary-foreground")}>
+                      {item.title}
+                    </span>
+                  </NavLink>
+                );
+              })}
+            </div>
+          )}
         </nav>
       </SheetContent>
     </Sheet>

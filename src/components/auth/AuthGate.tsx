@@ -437,9 +437,9 @@ export function AuthGate({ children }: { children: ReactNode }) {
                             <SelectValue placeholder="Choose access level" />
                           </SelectTrigger>
                           <SelectContent>
-                            <SelectItem value="viewer">Regular member</SelectItem>
-                            <SelectItem value="volunteer">Volunteer</SelectItem>
-                            <SelectItem value="leader">Leader</SelectItem>
+                            <SelectItem value="member">Regular member</SelectItem>
+                            <SelectItem value="volunteer">Volunteer / Staff</SelectItem>
+                            <SelectItem value="leader">Leader / Coordinator</SelectItem>
                           </SelectContent>
                         </Select>
                       </div>

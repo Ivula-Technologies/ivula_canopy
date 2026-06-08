@@ -13,9 +13,9 @@ import {
 
 const PENDING_SIGNUP_INTENT_KEY = "ivula_canopy_pending_signup_intent";
 
-export type ChurchRole = "owner" | "admin" | "leader" | "volunteer" | "viewer";
+export type ChurchRole = "owner" | "admin" | "leader" | "volunteer" | "viewer" | "member";
 export type ChurchMembershipStatus = "active" | "invited" | "disabled";
-export type JoinableChurchRole = "leader" | "volunteer" | "viewer";
+export type JoinableChurchRole = "leader" | "volunteer" | "viewer" | "member";
 
 export type SignupIntent =
   | { type: "register_church"; churchName: string; organizationType?: string }
@@ -49,6 +49,7 @@ interface AuthContextValue {
   pendingMembership: ChurchMembership | null;
   isLoadingAccess: boolean;
   accessError: string | null;
+  isMemberPortal: boolean;
   canEditRecords: boolean;
   canManageChurch: boolean;
   canRecordAttendance: boolean;
@@ -327,6 +328,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const activeMembership = memberships.find((membership) => membership.status === "active" && membership.churchId === activeChurchId) ?? memberships.find((membership) => membership.status === "active") ?? null;
   const pendingMembership = memberships.find((membership) => membership.status === "invited") ?? null;
   const activeRole = activeMembership?.role;
+  // viewer and member roles see the community member portal, not the admin dashboard
+  const isMemberPortal = activeRole === "viewer" || activeRole === "member";
   const canManageChurch = activeRole === "owner" || activeRole === "admin";
   const canEditRecords = canManageChurch || activeRole === "leader";
   const canRecordAttendance = canEditRecords || activeRole === "volunteer";
@@ -342,6 +345,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       pendingMembership,
       isLoadingAccess,
       accessError,
+      isMemberPortal,
       canEditRecords,
       canManageChurch,
       canRecordAttendance,
@@ -378,7 +382,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         window.location.reload();
       },
     }),
-    [session, memberships, activeMembership, pendingMembership, isLoadingAccess, accessError, canEditRecords, canManageChurch, canRecordAttendance, canExportRecords]
+    [session, memberships, activeMembership, pendingMembership, isLoadingAccess, accessError, isMemberPortal, canEditRecords, canManageChurch, canRecordAttendance, canExportRecords]
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
