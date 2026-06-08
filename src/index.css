@@ -2,123 +2,135 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Canopy Dashboard Design System
-   Warm, welcoming church-friendly palette with modern aesthetics */
+/* Ivula Canopy Design System
+   Brand palette: Canopy Blue #2E7D9A · Growth Green #5EAD65 · Community Gold #E8A34C */
 
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700&display=swap');
 
 @layer base {
   :root {
-    /* Warm blue - trustworthy, calming */
-    --primary: 215 70% 45%;
+    /* Canopy Blue #2E7D9A — trust, stability, protective shelter */
+    --primary: 196 54% 39%;
     --primary-foreground: 0 0% 100%;
-    
-    /* Warm amber/gold - welcoming, hopeful */
-    --accent: 35 90% 52%;
-    --accent-foreground: 30 50% 15%;
-    
-    /* Soft warm backgrounds */
-    --background: 220 20% 98%;
-    --foreground: 220 30% 15%;
-    
-    /* Cards with subtle warmth */
+
+    /* Community Gold #E8A34C — warmth, welcome, hope */
+    --accent: 33 77% 60%;
+    --accent-foreground: 30 60% 15%;
+
+    /* Backgrounds — subtle Canopy Blue tint */
+    --background: 196 20% 98%;
+    --foreground: 196 30% 15%;
+
     --card: 0 0% 100%;
-    --card-foreground: 220 30% 15%;
-    
+    --card-foreground: 196 30% 15%;
+
     --popover: 0 0% 100%;
-    --popover-foreground: 220 30% 15%;
-    
-    /* Secondary - muted blue-gray */
-    --secondary: 215 25% 93%;
-    --secondary-foreground: 220 30% 25%;
-    
+    --popover-foreground: 196 30% 15%;
+
+    /* Secondary — muted blue-teal */
+    --secondary: 196 20% 93%;
+    --secondary-foreground: 196 30% 25%;
+
     /* Muted states */
-    --muted: 220 15% 94%;
-    --muted-foreground: 220 15% 45%;
-    
+    --muted: 196 15% 94%;
+    --muted-foreground: 196 15% 45%;
+
     /* Status colors */
     --destructive: 0 72% 51%;
     --destructive-foreground: 0 0% 100%;
-    
-    --success: 142 70% 40%;
+
+    /* Growth Green #5EAD65 — success / engaged */
+    --success: 125 33% 45%;
     --success-foreground: 0 0% 100%;
-    
-    --warning: 38 92% 50%;
-    --warning-foreground: 30 50% 15%;
-    
+
+    /* Community Gold #E8A34C — warning / at-risk */
+    --warning: 33 77% 52%;
+    --warning-foreground: 30 60% 15%;
+
     /* Borders and inputs */
-    --border: 220 20% 88%;
-    --input: 220 20% 88%;
-    --ring: 215 70% 45%;
-    
+    --border: 196 20% 88%;
+    --input: 196 20% 88%;
+    --ring: 196 54% 39%;
+
     --radius: 0.625rem;
-    
-    /* Sidebar - slightly warmer */
-    --sidebar-background: 220 25% 96%;
-    --sidebar-foreground: 220 25% 25%;
-    --sidebar-primary: 215 70% 45%;
+
+    /* Sidebar — deep Canopy Blue tint */
+    --sidebar-background: 196 30% 95%;
+    --sidebar-foreground: 196 30% 20%;
+    --sidebar-primary: 196 54% 39%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 35 90% 52%;
-    --sidebar-accent-foreground: 30 50% 15%;
-    --sidebar-border: 220 20% 90%;
-    --sidebar-ring: 215 70% 45%;
-    
-    /* Chart colors */
-    --chart-1: 215 70% 50%;
-    --chart-2: 35 90% 55%;
-    --chart-3: 142 70% 45%;
-    --chart-4: 280 65% 55%;
-    --chart-5: 190 80% 45%;
-    
+    --sidebar-accent: 33 77% 60%;
+    --sidebar-accent-foreground: 30 60% 15%;
+    --sidebar-border: 196 25% 88%;
+    --sidebar-ring: 196 54% 39%;
+
+    /* Chart colors — brand palette + complements */
+    --chart-1: 196 54% 39%;   /* Canopy Blue */
+    --chart-2: 33 77% 60%;    /* Community Gold */
+    --chart-3: 125 33% 52%;   /* Growth Green */
+    --chart-4: 196 54% 62%;   /* Canopy Blue light */
+    --chart-5: 33 77% 76%;    /* Community Gold light */
+
     /* Engagement status */
-    --engaged: 142 70% 45%;
-    --at-risk: 38 92% 50%;
+    --engaged: 125 33% 45%;   /* Growth Green */
+    --at-risk: 33 77% 52%;    /* Community Gold */
     --disengaged: 0 72% 55%;
   }
 
   .dark {
-    --primary: 215 70% 55%;
-    --primary-foreground: 220 30% 10%;
-    
-    --accent: 35 85% 55%;
-    --accent-foreground: 30 50% 10%;
-    
-    --background: 220 25% 10%;
-    --foreground: 220 15% 92%;
-    
-    --card: 220 25% 13%;
-    --card-foreground: 220 15% 92%;
-    
-    --popover: 220 25% 13%;
-    --popover-foreground: 220 15% 92%;
-    
-    --secondary: 220 20% 18%;
-    --secondary-foreground: 220 15% 85%;
-    
-    --muted: 220 20% 18%;
-    --muted-foreground: 220 15% 60%;
-    
+    /* Canopy Blue lifted for dark backgrounds */
+    --primary: 196 54% 58%;
+    --primary-foreground: 196 40% 8%;
+
+    --accent: 33 77% 65%;
+    --accent-foreground: 30 60% 10%;
+
+    --background: 196 25% 9%;
+    --foreground: 196 15% 92%;
+
+    --card: 196 25% 12%;
+    --card-foreground: 196 15% 92%;
+
+    --popover: 196 25% 12%;
+    --popover-foreground: 196 15% 92%;
+
+    --secondary: 196 20% 17%;
+    --secondary-foreground: 196 15% 85%;
+
+    --muted: 196 20% 17%;
+    --muted-foreground: 196 15% 58%;
+
     --destructive: 0 72% 45%;
     --destructive-foreground: 0 0% 100%;
-    
-    --success: 142 65% 35%;
+
+    --success: 125 33% 48%;
     --success-foreground: 0 0% 100%;
-    
-    --warning: 38 85% 45%;
+
+    --warning: 33 77% 55%;
     --warning-foreground: 0 0% 100%;
-    
-    --border: 220 20% 22%;
-    --input: 220 20% 22%;
-    --ring: 215 70% 55%;
-    
-    --sidebar-background: 220 25% 12%;
-    --sidebar-foreground: 220 15% 88%;
-    --sidebar-primary: 215 70% 55%;
-    --sidebar-primary-foreground: 220 30% 10%;
-    --sidebar-accent: 35 85% 50%;
+
+    --border: 196 20% 21%;
+    --input: 196 20% 21%;
+    --ring: 196 54% 58%;
+
+    --sidebar-background: 196 28% 11%;
+    --sidebar-foreground: 196 15% 88%;
+    --sidebar-primary: 196 54% 58%;
+    --sidebar-primary-foreground: 196 40% 8%;
+    --sidebar-accent: 33 77% 60%;
     --sidebar-accent-foreground: 0 0% 100%;
-    --sidebar-border: 220 20% 20%;
-    --sidebar-ring: 215 70% 55%;
+    --sidebar-border: 196 20% 19%;
+    --sidebar-ring: 196 54% 58%;
+
+    --chart-1: 196 54% 58%;
+    --chart-2: 33 77% 65%;
+    --chart-3: 125 33% 55%;
+    --chart-4: 196 54% 72%;
+    --chart-5: 33 77% 78%;
+
+    --engaged: 125 33% 48%;
+    --at-risk: 33 77% 55%;
+    --disengaged: 0 72% 50%;
   }
 }
 
