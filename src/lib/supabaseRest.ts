@@ -11,6 +11,8 @@ export interface SupabaseSession {
   user?: {
     id: string;
     email?: string;
+    user_metadata?: Record<string, unknown>;
+    [key: string]: unknown;
   };
 }
 
@@ -218,10 +220,11 @@ export async function updateUserMetadata(metadata: Record<string, unknown>): Pro
     throw new Error(payload?.error_description || payload?.msg || payload?.message || "Unable to update profile");
   }
 
-  // Merge updated user into the stored session so callers see the new metadata.
+  // payload IS the updated user object from Supabase (id, email, user_metadata, …).
+  // Preserve the session tokens and replace the user wholesale.
   const existing = getStoredSession();
   if (existing) {
-    const updated: SupabaseSession = { ...existing, user: { ...existing.user, ...payload } };
+    const updated: SupabaseSession = { ...existing, user: payload };
     storeSession(updated);
     return updated;
   }

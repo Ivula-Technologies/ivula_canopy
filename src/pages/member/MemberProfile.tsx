@@ -1,4 +1,4 @@
-import { FormEvent, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 import { AlertTriangle, User } from "lucide-react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import {
@@ -33,6 +33,14 @@ export default function MemberProfile() {
     savedName ?? userEmail.split("@")[0].replace(".", " ").replace(/\b\w/g, (c) => c.toUpperCase())
   );
   const [phone, setPhone] = useState(savedPhone ?? "");
+
+  useEffect(() => {
+    if (savedName !== undefined) setDisplayName(savedName);
+  }, [savedName]);
+  useEffect(() => {
+    if (savedPhone !== undefined) setPhone(savedPhone);
+  }, [savedPhone]);
+
   const [saving, setSaving] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [deleting, setDeleting] = useState(false);

@@ -1,4 +1,4 @@
-import { FormEvent, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 import { AlertTriangle, Moon, Sun, SunMoon, User } from "lucide-react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import {
@@ -44,6 +44,14 @@ export default function StaffProfile() {
     savedName ?? userEmail.split("@")[0].replace(/[._]/g, " ").replace(/\b\w/g, (c) => c.toUpperCase())
   );
   const [phone, setPhone] = useState(savedPhone ?? "");
+
+  // Sync form fields when the session user_metadata updates after a save.
+  useEffect(() => {
+    if (savedName !== undefined) setDisplayName(savedName);
+  }, [savedName]);
+  useEffect(() => {
+    if (savedPhone !== undefined) setPhone(savedPhone);
+  }, [savedPhone]);
   const [saving, setSaving] = useState(false);
   const [theme, setThemeState] = useState(getStoredTheme);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
