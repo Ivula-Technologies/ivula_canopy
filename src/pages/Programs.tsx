@@ -492,9 +492,9 @@ const Programs = () => {
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label>Category</Label>
+                <Label htmlFor="program-category">Category</Label>
                 <Select value={programDraft.category} onValueChange={(v) => setProgramDraft((d) => ({ ...d, category: v as Program["category"] }))}>
-                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectTrigger id="program-category"><SelectValue /></SelectTrigger>
                   <SelectContent>
                     <SelectItem value="worship">Gathering</SelectItem>
                     <SelectItem value="sabbath_school">Study Group</SelectItem>
@@ -506,9 +506,9 @@ const Programs = () => {
                 </Select>
               </div>
               <div className="space-y-2">
-                <Label>Schedule Type</Label>
+                <Label htmlFor="program-schedule-type">Schedule Type</Label>
                 <Select value={programDraft.scheduleType} onValueChange={(v) => setProgramDraft((d) => ({ ...d, scheduleType: v as Program["scheduleType"] }))}>
-                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectTrigger id="program-schedule-type"><SelectValue /></SelectTrigger>
                   <SelectContent>
                     <SelectItem value="sabbath">Weekend</SelectItem>
                     <SelectItem value="weekday">Weekday</SelectItem>

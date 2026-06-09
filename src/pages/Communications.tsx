@@ -359,9 +359,9 @@ const Communications = () => {
                   </CardHeader>
                   <CardContent className="space-y-4">
                     <div className="space-y-2">
-                      <Label>Send to</Label>
+                      <Label htmlFor="announcement-audience">Send to</Label>
                       <Select value={audience} onValueChange={(v) => setAudience(v as AnnouncementAudience)}>
-                        <SelectTrigger>
+                        <SelectTrigger id="announcement-audience">
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
@@ -373,9 +373,9 @@ const Communications = () => {
                       </Select>
                     </div>
                     <div className="space-y-2">
-                      <Label>Category</Label>
+                      <Label htmlFor="announcement-category">Category</Label>
                       <Select value={category} onValueChange={(v) => setCategory(v as AnnouncementCategory)}>
-                        <SelectTrigger>
+                        <SelectTrigger id="announcement-category">
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>

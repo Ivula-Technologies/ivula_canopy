@@ -234,9 +234,9 @@ export function AuthGate({ children }: { children: ReactNode }) {
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label>Access level</Label>
+                    <Label htmlFor="join-role">Access level</Label>
                     <Select value={role} onValueChange={(v) => setRole(v as JoinableChurchRole)}>
-                      <SelectTrigger><SelectValue /></SelectTrigger>
+                      <SelectTrigger id="join-role"><SelectValue /></SelectTrigger>
                       <SelectContent>
                         <SelectItem value="member">Regular member</SelectItem>
                         <SelectItem value="volunteer">Volunteer / Staff</SelectItem>
@@ -550,9 +550,9 @@ export function AuthGate({ children }: { children: ReactNode }) {
                         />
                       </div>
                       <div className="space-y-2">
-                        <Label>Access level</Label>
+                        <Label htmlFor="register-role">Access level</Label>
                         <Select value={role} onValueChange={(value) => setRole(value as JoinableChurchRole)}>
-                          <SelectTrigger>
+                          <SelectTrigger id="register-role">
                             <SelectValue placeholder="Choose access level" />
                           </SelectTrigger>
                           <SelectContent>

@@ -300,9 +300,9 @@ const Settings = () => {
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label>Organization type</Label>
+                      <Label htmlFor="org-type">Organization type</Label>
                       <Select value={organizationType} onValueChange={applyPreset}>
-                        <SelectTrigger>
+                        <SelectTrigger id="org-type">
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
