@@ -220,6 +220,8 @@ export async function updateUserMetadata(metadata: Record<string, unknown>): Pro
     throw new Error(payload?.error_description || payload?.msg || payload?.message || "Unable to update profile");
   }
 
+  console.debug("[updateUserMetadata] response payload:", JSON.stringify(payload));
+
   // payload IS the updated user object from Supabase (id, email, user_metadata, …).
   // Preserve the session tokens and replace the user wholesale.
   const existing = getStoredSession();

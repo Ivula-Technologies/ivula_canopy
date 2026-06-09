@@ -66,10 +66,15 @@ export default function StaffProfile() {
     e.preventDefault();
     setSaving(true);
     try {
+      const trimmedName = displayName.trim();
+      const trimmedPhone = phone.trim();
       if (isSupabaseConfigured) {
-        const updated = await updateUserMetadata({ display_name: displayName.trim(), phone: phone.trim() });
+        const updated = await updateUserMetadata({ display_name: trimmedName, phone: trimmedPhone });
         updateSession(updated);
       }
+      // Sync state to trimmed values so the display reflects what was saved.
+      setDisplayName(trimmedName);
+      setPhone(trimmedPhone);
       toast({ title: "Profile updated", description: "Your changes have been saved." });
     } catch (err) {
       toast({ title: "Save failed", description: err instanceof Error ? err.message : "Unable to save profile.", variant: "destructive" });

@@ -53,10 +53,14 @@ export default function MemberProfile() {
     e.preventDefault();
     setSaving(true);
     try {
+      const trimmedName = displayName.trim();
+      const trimmedPhone = phone.trim();
       if (isSupabaseConfigured) {
-        const updated = await updateUserMetadata({ display_name: displayName.trim(), phone: phone.trim() });
+        const updated = await updateUserMetadata({ display_name: trimmedName, phone: trimmedPhone });
         updateSession(updated);
       }
+      setDisplayName(trimmedName);
+      setPhone(trimmedPhone);
       toast({ title: "Profile updated", description: "Your changes have been saved." });
     } catch (err) {
       toast({
