@@ -484,11 +484,11 @@ const Programs = () => {
           <div className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="program-name">Name</Label>
-              <Input id="program-name" value={programDraft.name} onChange={(e) => setProgramDraft((d) => ({ ...d, name: e.target.value }))} />
+              <Input id="program-name" autoComplete="off" value={programDraft.name} onChange={(e) => setProgramDraft((d) => ({ ...d, name: e.target.value }))} />
             </div>
             <div className="space-y-2">
               <Label htmlFor="program-description">Description</Label>
-              <Textarea id="program-description" value={programDraft.description} onChange={(e) => setProgramDraft((d) => ({ ...d, description: e.target.value }))} />
+              <Textarea id="program-description" autoComplete="off" value={programDraft.description} onChange={(e) => setProgramDraft((d) => ({ ...d, description: e.target.value }))} />
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-2">
@@ -520,15 +520,15 @@ const Programs = () => {
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="program-leader">Lead</Label>
-                <Input id="program-leader" value={programDraft.leader} onChange={(e) => setProgramDraft((d) => ({ ...d, leader: e.target.value }))} />
+                <Input id="program-leader" autoComplete="off" value={programDraft.leader} onChange={(e) => setProgramDraft((d) => ({ ...d, leader: e.target.value }))} />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="program-schedule">Schedule</Label>
-                <Input id="program-schedule" value={programDraft.schedule} onChange={(e) => setProgramDraft((d) => ({ ...d, schedule: e.target.value }))} placeholder="Tuesdays at 6 PM" />
+                <Input id="program-schedule" autoComplete="off" value={programDraft.schedule} onChange={(e) => setProgramDraft((d) => ({ ...d, schedule: e.target.value }))} placeholder="Tuesdays at 6 PM" />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="program-capacity">Capacity</Label>
-                <Input id="program-capacity" type="number" min="0" value={programDraft.maxCapacity} onChange={(e) => setProgramDraft((d) => ({ ...d, maxCapacity: e.target.value }))} />
+                <Input id="program-capacity" autoComplete="off" type="number" min="0" value={programDraft.maxCapacity} onChange={(e) => setProgramDraft((d) => ({ ...d, maxCapacity: e.target.value }))} />
               </div>
             </div>
           </div>

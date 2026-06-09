@@ -131,13 +131,14 @@ export default function MemberProfile() {
               <Label htmlFor="display-name">Display name</Label>
               <Input
                 id="display-name"
+                autoComplete="name"
                 value={displayName}
                 onChange={(e) => setDisplayName(e.target.value)}
               />
             </div>
             <div className="space-y-1.5">
               <Label htmlFor="email">Email address</Label>
-              <Input id="email" value={userEmail} disabled className="bg-muted" />
+              <Input id="email" autoComplete="email" value={userEmail} disabled className="bg-muted" />
               <p className="text-xs text-muted-foreground">Contact your administrator to change your email.</p>
             </div>
             <div className="space-y-1.5">
@@ -145,6 +146,7 @@ export default function MemberProfile() {
               <Input
                 id="phone"
                 type="tel"
+                autoComplete="tel"
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
                 placeholder="+1 555 000 0000"

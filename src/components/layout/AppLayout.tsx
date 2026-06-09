@@ -69,6 +69,7 @@ export function AppLayout({ children }: AppLayoutProps) {
               <Input
                 id="global-search"
                 name="global-search"
+                autoComplete="off"
                 placeholder="Search people, programs..."
                 className="pl-9 bg-muted/50 border-0 focus-visible:ring-1"
               />

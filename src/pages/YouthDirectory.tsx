@@ -275,6 +275,7 @@ const YouthDirectory = () => {
           <Input
             id="directory-search"
             name="directory-search"
+            autoComplete="off"
             placeholder="Search by name or email..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}

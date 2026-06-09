@@ -294,6 +294,7 @@ const Settings = () => {
                       <Label htmlFor="organization-name">Organization name</Label>
                       <Input
                         id="organization-name"
+                        autoComplete="organization"
                         value={organizationName}
                         onChange={(event) => setOrganizationName(event.target.value)}
                         required
@@ -314,24 +315,24 @@ const Settings = () => {
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="member-label">People label</Label>
-                      <Input id="member-label" value={memberLabel} onChange={(event) => setMemberLabel(event.target.value)} />
+                      <Input id="member-label" autoComplete="off" value={memberLabel} onChange={(event) => setMemberLabel(event.target.value)} />
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="program-label">Program label</Label>
-                      <Input id="program-label" value={programLabel} onChange={(event) => setProgramLabel(event.target.value)} />
+                      <Input id="program-label" autoComplete="off" value={programLabel} onChange={(event) => setProgramLabel(event.target.value)} />
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="group-label">Group label</Label>
-                      <Input id="group-label" value={groupLabel} onChange={(event) => setGroupLabel(event.target.value)} />
+                      <Input id="group-label" autoComplete="off" value={groupLabel} onChange={(event) => setGroupLabel(event.target.value)} />
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="attendance-label">Attendance label</Label>
-                      <Input id="attendance-label" value={attendanceLabel} onChange={(event) => setAttendanceLabel(event.target.value)} />
+                      <Input id="attendance-label" autoComplete="off" value={attendanceLabel} onChange={(event) => setAttendanceLabel(event.target.value)} />
                     </div>
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="primary-focus">Primary focus</Label>
-                    <Input id="primary-focus" value={primaryFocus} onChange={(event) => setPrimaryFocus(event.target.value)} />
+                    <Input id="primary-focus" autoComplete="off" value={primaryFocus} onChange={(event) => setPrimaryFocus(event.target.value)} />
                   </div>
 
                   <div className="rounded-lg border bg-muted/40 p-4 text-sm">
@@ -559,13 +560,14 @@ const Settings = () => {
                   <Label htmlFor="staff-display-name">Display name</Label>
                   <Input
                     id="staff-display-name"
+                    autoComplete="name"
                     value={displayName}
                     onChange={(e) => setDisplayName(e.target.value)}
                   />
                 </div>
                 <div className="space-y-1.5">
                   <Label htmlFor="staff-email">Email address</Label>
-                  <Input id="staff-email" value={userEmail} disabled className="bg-muted" />
+                  <Input id="staff-email" autoComplete="email" value={userEmail} disabled className="bg-muted" />
                   <p className="text-xs text-muted-foreground">Contact your organization owner to change your email.</p>
                 </div>
                 <Button type="submit" disabled={savingProfile}>
